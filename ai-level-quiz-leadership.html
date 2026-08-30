@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Assessment · Leadership</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #fbfbfd;
+  --surface: #ffffff;
+  --surface-2: #f5f5f7;
+  --surface-raised: #ffffff;
+  --surface-hover: #f5f5f7;
+  --text: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-muted: #86868b;
+  --accent: #0071e3;
+  --accent-dark: #0077ed;
+  --accent-light: #2997ff;
+  --accent-bg: rgba(0, 113, 227, 0.08);
+  --accent-border: rgba(0, 113, 227, 0.22);
+  --green: #34c759;
+  --green-bg: rgba(52, 199, 89, 0.1);
+  --green-border: rgba(52, 199, 89, 0.25);
+  --red: #ff3b30;
+  --red-bg: rgba(255, 59, 48, 0.08);
+  --blue: #0071e3;
+  --blue-bg: rgba(0, 113, 227, 0.08);
+  --blue-border: rgba(0, 113, 227, 0.22);
+  --border: #d2d2d7;
+  --border-light: #e8e8ed;
+  --radius: 22px;
+  --radius-sm: 14px;
+  --pill: 980px;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px 24px 64px;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.bar{display:flex;align-items:center;justify-content:space-between;max-width:680px;margin:0 auto;padding:28px 24px 0;}
+.wm{font-size:15px;font-weight:600;letter-spacing:-0.01em;color:var(--text);display:flex;align-items:center;gap:9px;text-decoration:none;}
+.wm .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);}
+.seg{display:inline-flex;background:var(--surface-2);border-radius:var(--pill);padding:2px;}
+.seg button{border:none;background:transparent;color:var(--text-muted);font:inherit;font-size:13px;font-weight:600;padding:5px 14px;border-radius:var(--pill);cursor:pointer;transition:all .2s;}
+.seg button.active{background:var(--text);color:#fff;}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:0.04em;color:var(--accent);margin-bottom:14px;text-transform:uppercase;text-align:center;}
+
+.header h1 {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.header p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Progress */
+.progress-wrap {
+  margin-bottom: 32px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 1px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0%;
+}
+
+.step-indicator {
+  text-align: right;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+}
+
+/* Question Card */
+.question-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 36px 32px;
+  border: 1px solid var(--border);
+  display: none;
+  animation: slideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.question-card.active { display: block; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.question-card .q-label {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.question-card h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 26px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+/* Options */
+.options { display: flex; flex-direction: column; gap: 8px; }
+
+.option {
+  padding: 13px 16px 13px 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  line-height: 1.6;
+  position: relative;
+  color: var(--text-secondary);
+  background: var(--surface);
+}
+
+.option::before {
+  content: attr(data-label);
+  position: absolute;
+  left: 12px;
+  top: 13px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.option:hover {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--text);
+}
+
+.option:hover::before {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.option.selected {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  color: var(--text);
+}
+
+.option.selected::before {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+/* Navigation */
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+
+.btn {
+  padding: 11px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.btn-primary:hover { background: var(--accent-light); }
+.btn-primary:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-muted);
+  padding: 11px 16px;
+}
+
+.btn-secondary:hover { color: var(--text); }
+
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  font-size: 15px;
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+}
+
+.btn-submit:hover {
+  background: var(--accent-light);
+}
+
+/* Results */
+.results-page {
+  display: none;
+  animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.results-page.active { display: block; }
+
+.result-hero {
+  text-align: center;
+  padding: 44px 32px 36px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.result-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent);
+}
+
+.result-hero .score-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 16px;
+  letter-spacing: 0.3px;
+}
+
+.result-hero h2 {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.result-hero .level-name { color: var(--accent); }
+
+.result-hero .desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 460px;
+  margin: 12px auto 0;
+  line-height: 1.8;
+}
+
+/* Level Track */
+.level-track {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: 28px 0 8px;
+  position: relative;
+}
+
+.level-track::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: var(--border);
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.track-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.track-node .node {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  transition: all 0.4s ease;
+}
+
+.track-node .node.reached {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.track-node .node.current {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+  transform: scale(1.18);
+}
+
+.track-node .node-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.track-node .node-label.current-label {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Report Cards */
+.report-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 26px 26px;
+  margin-bottom: 12px;
+}
+
+.report-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  letter-spacing: 0.3px;
+}
+
+.report-card h3 .title-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.report-card.highlights h3 .title-icon { color: var(--accent-light); }
+.report-card.blockers h3 .title-icon { color: var(--red); }
+.report-card.nextsteps h3 .title-icon { color: var(--green); }
+.report-card.role-advice h3 .title-icon { color: var(--blue); }
+
+.report-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.report-card ul li {
+  padding: 10px 0;
+  padding-left: 14px;
+  position: relative;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.report-card ul li:last-child { border-bottom: none; padding-bottom: 0; }
+.report-card ul li:first-child { padding-top: 0; }
+
+.report-card ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 18px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.report-card ul li:first-child::before { top: 8px; }
+
+.report-card ul li strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.report-card .role-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--blue-bg);
+  border: 1px solid var(--blue-border);
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--blue);
+  margin-bottom: 14px;
+  letter-spacing: 0.3px;
+}
+
+/* CTA bottom */
+.cta-bottom {
+  text-align: center;
+  padding: 28px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin-top: 16px;
+}
+
+.cta-bottom p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+
+.cta-bottom .btn-learn {
+  display: inline-block;
+  padding: 12px 28px;
+  font-size: 14px;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.cta-bottom .btn-learn:hover {
+  background: var(--accent-dark);
+}
+
+.cta-bottom .btn-restart {
+  display: block;
+  margin: 14px auto 0;
+  padding: 8px 20px;
+  font-size: 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.cta-bottom .btn-restart:hover {
+  border-color: var(--text-muted);
+  color: var(--text-secondary);
+}
+
+/* Language toggle now lives in the top .bar as .seg */
+
+/* Responsive */
+@media (max-width: 480px) {
+  .container { padding: 32px 16px 48px; }
+  .question-card { padding: 28px 20px; }
+  .header h1 { font-size: 22px; }
+  .result-hero { padding: 36px 20px 28px; }
+  .result-hero h2 { font-size: 26px; }
+  .report-card { padding: 20px 18px; }
+  .track-node .node-label { font-size: 9px; }
+}
+/* Ribbon celebration */
+.ribbon-overlay{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;}
+.ribbon{position:absolute;top:0;will-change:transform;animation:ribbon-fall var(--fall) cubic-bezier(.3,.45,.55,1) var(--delay) both;}
+.ribbon i{display:block;width:100%;height:100%;border-radius:2px;animation:ribbon-tumble var(--tumble) linear infinite;}
+@keyframes ribbon-fall{
+  0%{transform:translate3d(0,-72px,0) rotate(0deg);opacity:0;}
+  6%{opacity:1;}
+  85%{opacity:1;}
+  100%{transform:translate3d(var(--sway),112vh,0) rotate(var(--spin));opacity:0;}
+}
+@keyframes ribbon-tumble{
+  from{transform:rotate3d(1,.8,.3,0deg);}
+  to{transform:rotate3d(1,.8,.3,360deg);}
+}
+</style>
+</head>
+<body>
+<div class="bar">
+  <a class="wm" href="ai-level-quiz-hub.html"><span class="dot"></span><span id="wm"></span></a>
+  <div class="seg">
+    <button id="btn-en" class="active" onclick="switchLang('en')">EN</button>
+    <button id="btn-zh" onclick="switchLang('zh')">中</button>
+  </div>
+</div>
+<div class="container">
+  <!-- Header -->
+  <div class="header" id="quiz-header">
+    <div class="eyebrow" id="header-eyebrow"></div>
+    <h1 id="header-title"></h1>
+    <p id="header-subtitle"></p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap" id="progress-wrap">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="step-indicator" id="step-indicator">1 / 8</div>
+  </div>
+
+  <!-- Questions rendered dynamically -->
+  <div id="questions-container"></div>
+
+  <!-- Results -->
+  <div class="results-page" id="results-page">
+    <div class="result-hero" id="result-hero"></div>
+
+    <div class="report-card highlights" id="report-highlights">
+      <h3><svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.6l2.4 2.4 4.6-5.4"/></svg><span id="highlights-title"></span></h3>
+      <ul id="highlights-list"></ul>
+    </div>
+
+    <div class="report-card blockers" id="report-blockers">
+      <h3><svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 5.1L3.3 17.3c-.8 1.4.2 3.2 1.8 3.2h13.8c1.6 0 2.6-1.8 1.8-3.2L13.7 5.1c-.8-1.4-2.6-1.4-3.4 0z"/><path d="M12 9.5v4.5"/><path d="M12 17.2h.01"/></svg><span id="blockers-title"></span></h3>
+      <ul id="blockers-list"></ul>
+    </div>
+
+    <div class="report-card nextsteps" id="report-next">
+      <h3><svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><span id="nextsteps-title"></span></h3>
+      <ul id="next-list"></ul>
+    </div>
+
+    <div class="report-card role-advice" id="report-role">
+      <h3><svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="2.6"/><path d="M7.2 17.4c.9-2.5 2.7-3.9 4.8-3.9s3.9 1.4 4.8 3.9"/></svg><span id="role-title"></span></h3>
+      <div class="role-badge" id="role-badge"></div>
+      <ul id="role-list"></ul>
+    </div>
+
+    <div class="cta-bottom">
+      <p id="cta-text"></p>
+      <a href="mailto:juanlijackie2020@gmail.com" class="btn-learn" id="btn-learn"></a>
+      <button class="btn-restart" onclick="restart()" id="btn-restart"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentLang = 'en';
+const answers = {};
+let currentQ = 1;
+const totalQ = 8;
+let computedLevel = '';
+let computedScore = 0;
+
+const i18n = {
+  en: {
+    wm: 'AI Assessment',
+    eyebrow: 'Leadership',
+    title: 'What Level Is Your AI Leadership?',
+    subtitle: '8 questions · 2 minutes · Instant AI leadership capability report',
+    next: 'Next',
+    prev: 'Back',
+    submit: 'See My Results',
+    q1Label: 'Q1 · Your Function',
+    q1Title: 'Which function are you leading?',
+    q1Options: ['G&A (FG, HR, COB)', 'R&D', 'Sales & Marketing', 'IT', 'Production'],
+    q2Label: 'Q2 · Vision & Strategy',
+    q2Title: 'How clearly have you defined AI\'s role in your team or function\'s strategy?',
+    q2Options: [
+      'AI isn\'t part of our strategy discussions yet',
+      'I see AI\'s potential but haven\'t articulated it for my team',
+      'I\'ve shared a point of view on where AI fits for my function',
+      'AI is explicitly written into our function\'s strategy and priorities',
+      'AI is central to our strategy — it shapes how we organize and compete'
+    ],
+    q3Label: 'Q3 · Sponsorship',
+    q3Title: 'How do you sponsor AI initiatives in your team?',
+    q3Options: [
+      'I haven\'t sponsored any AI initiatives',
+      'I encourage people to try AI, but without dedicated resources',
+      'I sponsor specific pilots — protecting time and budget for them',
+      'I sponsor a portfolio of AI initiatives with clear owners and milestones',
+      'AI sponsorship is built into how I allocate resources every planning cycle'
+    ],
+    q4Label: 'Q4 · AI-Informed Decisions',
+    q4Title: 'How does AI factor into your own decision-making as a leader?',
+    q4Options: [
+      'I don\'t use AI in my decisions',
+      'I occasionally ask AI for a perspective on a decision',
+      'I regularly use AI to stress-test options before deciding',
+      'AI informs most major decisions — synthesizing data and surfacing trade-offs',
+      'My decisions are AI-augmented by default, with clear rules on when to trust vs. verify'
+    ],
+    q5Label: 'Q5 · Governance & Ethics',
+    q5Title: 'How have you addressed AI governance, risk, and ethics for your team?',
+    q5Options: [
+      'Haven\'t considered it — not on my radar',
+      'I rely on company-wide policies; we haven\'t set team-level guidelines',
+      'We\'ve started defining what\'s safe to use AI for and what isn\'t',
+      'We have clear team guidelines: data handling, risk tiers, review checkpoints',
+      'Governance is mature — continuously reviewed, with accountability and audit trails'
+    ],
+    q6Label: 'Q6 · Capability Building',
+    q6Title: 'How are you building your team\'s AI capability?',
+    q6Options: [
+      'I haven\'t invested in team AI skills yet',
+      'I\'ve pointed people to resources, but no structured plan',
+      'I\'ve set expectations and funded training for some team members',
+      'We have a deliberate upskilling plan mapped to roles and scenarios',
+      'Capability building is ongoing — we measure proficiency and reward improvement'
+    ],
+    q7Label: 'Q7 · Measuring Value',
+    q7Title: 'How do you measure the value AI creates for your team or function?',
+    q7Options: [
+      'We don\'t measure it — AI use is informal',
+      'We track anecdotal wins, but no metrics',
+      'We track a few proxies (time saved, adoption rate)',
+      'We measure outcomes against baselines — efficiency, quality, coverage',
+      'We quantify AI\'s business impact and feed it into strategy and resourcing'
+    ],
+    q8Label: 'Q8 · Judgment Call',
+    q8Title: 'Your team proposes using AI to screen candidates, but data shows a bias risk. As the leader, what do you do?',
+    q8Options: [
+      'Approve it — let the team move forward and address issues if they arise',
+      'Ask the team to be careful, then approve it',
+      'Pause it — require a bias review and clear guardrails before any use',
+      'Use it as a teaching moment — set a governance precedent, require human-in-the-loop, and define what "safe use" means',
+      'Treat it strategically — convene stakeholders, establish a reusable review standard, and turn the decision into org-wide capability'
+    ],
+    scoreBadge: 'Leadership Score',
+    highlightsTitle: 'Your Strengths',
+    blockersTitle: 'What\'s Holding You Back',
+    nextStepsTitle: 'Next-Level Upgrade Path',
+    roleTitle: 'Leadership Advice for Your Role',
+    ctaText: 'Want a tailored next step for your level? An AIOD consultant can help you turn this result into a concrete plan.',
+    learnBtn: 'Contact AIOD consultant →',
+    restart: 'Retake Assessment'
+  },
+  zh: {
+    wm: 'AI 测评',
+    eyebrow: '领导力',
+    title: '测测你的AI领导力在哪一层',
+    subtitle: '8道题 · 2分钟 · 即时生成你的AI领导力报告',
+    next: '下一题',
+    prev: '上一题',
+    submit: '查看我的结果',
+    q1Label: 'Q1 · 你的职能',
+    q1Title: '你正在领导哪个职能？',
+    q1Options: ['G&A (FG, HR, COB)', 'R&D', 'Sales & Marketing', 'IT', 'Production'],
+    q2Label: 'Q2 · 愿景与战略',
+    q2Title: '你在团队或职能战略中，对AI的角色定义有多清晰？',
+    q2Options: [
+      'AI还没有进入我们的战略讨论',
+      '我看到AI的潜力，但还没向团队讲清楚',
+      '我已分享过AI在我职能中的定位观点',
+      'AI已明确写入我们职能的战略和优先事项',
+      'AI是我们战略的核心——它塑造我们如何组织和竞争'
+    ],
+    q3Label: 'Q3 · 资源支持',
+    q3Title: '你如何为团队中的AI项目提供赞助支持？',
+    q3Options: [
+      '我还没有赞助过任何AI项目',
+      '我鼓励大家尝试AI，但没有专门投入资源',
+      '我赞助具体试点——为它们保护时间和预算',
+      '我赞助一组AI项目组合，有明确的负责人和里程碑',
+      'AI赞助已嵌入我每个规划周期的资源配置方式'
+    ],
+    q4Label: 'Q4 · AI辅助决策',
+    q4Title: '作为领导者，AI如何融入你自己的决策？',
+    q4Options: [
+      '我在决策中不使用AI',
+      '我偶尔会就某个决策问问AI的看法',
+      '我定期用AI在决策前压力测试选项',
+      'AI参与我大多数重大决策——综合数据、呈现权衡',
+      '我的决策默认AI辅助，并有清晰的"何时信任/何时核验"规则'
+    ],
+    q5Label: 'Q5 · 治理与伦理',
+    q5Title: '你如何为团队处理AI治理、风险与伦理？',
+    q5Options: [
+      '没考虑过——不在我雷达上',
+      '依赖公司层面政策；我们还没设团队级指引',
+      '我们已开始界定哪些场景适合用AI、哪些不适合',
+      '我们有清晰的团队指引：数据处理、风险分级、审查节点',
+      '治理已成熟——持续审查，有明确问责和审计轨迹'
+    ],
+    q6Label: 'Q6 · 能力建设',
+    q6Title: '你如何建设团队的AI能力？',
+    q6Options: [
+      '我还没投资团队AI技能',
+      '我指了资源方向，但没有结构化计划',
+      '我设定了期望并为部分团队成员资助了培训',
+      '我们有刻意规划的能力提升计划，对应角色和场景',
+      '能力建设是持续的——我们衡量熟练度并奖励进步'
+    ],
+    q7Label: 'Q7 · 价值衡量',
+    q7Title: '你如何衡量AI为团队或职能创造的价值？',
+    q7Options: [
+      '我们不衡量——AI使用是非正式的',
+      '我们追踪零星案例，但没有指标',
+      '我们追踪几个代理指标（节省时间、采用率）',
+      '我们对照基线衡量结果——效率、质量、覆盖度',
+      '我们量化AI的业务影响，并反馈到战略和资源配置'
+    ],
+    q8Label: 'Q8 · 判断题',
+    q8Title: '团队提议用AI筛选候选人，但数据显示存在偏差风险。作为领导者，你怎么做？',
+    q8Options: [
+      '批准——让团队推进，出现问题再说',
+      '提醒团队小心，然后批准',
+      '叫停——要求先做偏差审查并设清晰护栏，再考虑使用',
+      '当作教学时刻——设治理先例，要求人机协同，定义"安全使用"的含义',
+      '战略性对待——召集利益相关方，建立可复用的审查标准，把这次决策转化为组织级能力'
+    ],
+    scoreBadge: '领导力得分',
+    highlightsTitle: '你的亮点',
+    blockersTitle: '卡住你的东西',
+    nextStepsTitle: '下一步升级路线',
+    roleTitle: '针对你角色的领导力建议',
+    ctaText: '想为你的层级定制下一步？AIOD 顾问可以帮你把这个结果变成可落地的计划。',
+    learnBtn: '联系 AIOD 顾问 →',
+    restart: '重新测试'
+  }
+};
+
+const levelData = {
+  en: {
+    L1: {
+      name: 'Instructional',
+      desc: 'You\'re aware of AI\'s relevance to HR, but it hasn\'t entered how you lead. Decisions and team direction are made the traditional way; AI is "something people might try" rather than part of your leadership agenda.',
+      highlights: [
+        '<strong>Awareness</strong> — You recognize AI is relevant and will matter for your function. That awareness is the entry point.',
+        '<strong>Open Posture</strong> — You haven\'t shut the door on AI; your team isn\'t actively blocked from experimenting.',
+        '<strong>Honest Baseline</strong> — You\'re not pretending to lead on AI when you aren\'t. That clarity is an asset for honest growth.'
+      ],
+      blockers: [
+        '<strong>No Leadership Signal</strong> — Without your sponsorship, the team takes its cues elsewhere. AI adoption in your function will stay opportunistic and shallow.',
+        '<strong>Defer Decisions</strong> — Governance, risk, and "should we even use AI here" questions land on no one. Latent risks (bias, privacy, compliance) grow unmanaged.',
+        '<strong>Invisible Value</strong> — You can\'t advocate for AI resourcing because you have no evidence of what it could do. In budget cycles, AI loses to things leaders can quantify.',
+        '<strong>Personal Blind Spot</strong> — You haven\'t built personal fluency, so you can\'t evaluate AI claims, vet proposals, or coach your team through it.'
+      ],
+      next: [
+        '<strong>Build Personal Fluency First</strong> — Spend two weeks using AI on your own real tasks. You can\'t lead what you haven\'t touched.',
+        '<strong>Pick One Pilot to Sponsor</strong> — Choose a low-risk, high-visibility scenario and protect time and budget for it. Leadership shows up as sponsorship, not slogans.',
+        '<strong>Set a Clear "Why AI" for Your Function</strong> — Articulate, in one paragraph, what AI should do for your team this year. Share it with your team.',
+        '<strong>Recommended Learning</strong> — Search LinkedIn Learning for "AI for Leaders" and "AI Strategy Fundamentals" to build leadership-level foundations.'
+      ]
+    },
+    L2: {
+      name: 'Structured',
+      desc: 'You use AI personally and see its weight, but it hasn\'t become a leadership priority. Your team\'s AI use is uneven — driven by individual enthusiasts rather than your direction.',
+      highlights: [
+        '<strong>Personal Practice</strong> — You use AI yourself, so your instincts about its value are grounded, not theoretical.',
+        '<strong>Strategic Recognition</strong> — You see that AI is not just a productivity tool but a leadership question (capability, governance, advantage). That recognition is rare.',
+        '<strong>Credibility</strong> — Because you use it, your team will listen when you eventually make it a priority.'
+      ],
+      blockers: [
+        '<strong>Not Yet Prioritized</strong> — You see the weight but haven\'t made AI a stated priority. Your team can\'t read your mind, so effort stays scattered.',
+        '<strong>Leadership Vacuum</strong> — Enthusiasts charge ahead while others wait. Without your direction, you get shadow AI use, duplicated effort, and inconsistent quality.',
+        '<strong>No Governance Stance</strong> — Without you setting the line, people guess. Some avoid AI for fear of risk; others use it recklessly.',
+        '<strong>Personal vs. Organizational</strong> — Your skill stays personal. Until you translate it into team expectations, it doesn\'t compound.'
+      ],
+      next: [
+        '<strong>Make AI a Stated Priority</strong> — Name it explicitly in your team\'s priorities this quarter. What gets named gets resourced.',
+        '<strong>Set Guardrails, Not Bans</strong> — Define a simple green/yellow/red framework: what\'s safe to use AI for, what needs review, what\'s off-limits. Publish it.',
+        '<strong>Sponsor Deliberately</strong> — Move from passive encouragement to active sponsorship: protect time, fund a pilot, remove blockers.',
+        '<strong>Translate Personal Skill into Team Expectation</strong> — Set a baseline expectation (e.g., "everyone tries AI on X scenario") and model it yourself.',
+        '<strong>Recommended Learning</strong> — Search LinkedIn Learning for "Leading AI Initiatives" and "AI Governance Essentials" to move from personal use to team direction.'
+      ]
+    },
+    L3: {
+      name: 'Collaborative',
+      desc: 'You actively champion AI — sponsoring pilots, using AI in your own decisions, and beginning to form governance. AI is on your leadership agenda, though systems and measurement are still emerging.',
+      highlights: [
+        '<strong>Active Sponsorship</strong> — You don\'t just allow AI; you sponsor it. Pilots have protected time, owners, and your visible backing.',
+        '<strong>AI-Informed Leadership</strong> — You use AI to stress-test your own decisions. You\'re modeling the behavior you want to see.',
+        '<strong>Governance In Motion</strong> — You\'ve started defining safe-use boundaries. Your team knows there are lines, even if they\'re still being drawn.',
+        '<strong>Change Catalyst</strong> — Your stance has shifted the team\'s posture from "should we?" to "how should we?"'
+      ],
+      blockers: [
+        '<strong>Pilots, Not Portfolio</strong> — You sponsor individual pilots, but they\'re not yet a coordinated portfolio with shared learnings and owners.',
+        '<strong>Governance is Draft, Not Doctrine</strong> — Guidelines exist but aren\'t consistently applied or reviewed. Edge cases still get ad-hoc treatment.',
+        '<strong>No Outcome Measurement</strong> — You can point to activity (pilots run, people trained) but not yet to outcomes (efficiency, quality, ROI). This limits your ability to scale and justify.',
+        '<strong>Personal Champion, Not Systemic</strong> — Progress still depends heavily on you. If you stepped back, momentum would slow.'
+      ],
+      next: [
+        '<strong>From Pilots to Portfolio</strong> — Coordinate your AI initiatives into a portfolio: shared owners, milestones, and a mechanism to propagate learnings across the team.',
+        '<strong>Codify Governance</strong> — Move draft guidelines into team doctrine: risk tiers, review checkpoints, data-handling rules, and clear accountability.',
+        '<strong>Start Measuring Outcomes</strong> — Define 2-3 baseline metrics (time, quality, coverage) and measure AI initiatives against them. Evidence turns advocacy into resourcing.',
+        '<strong>Build Redundancy</strong> — Ensure the team can sustain AI momentum without you. Document, delegate, and develop AI champions below you.',
+        '<strong>Recommended Learning</strong> — Search LinkedIn Learning for "Scaling AI in Organizations" and "Building a Data-Driven Culture" to move from champion to system-builder.'
+      ]
+    },
+    L4: {
+      name: 'Systematic',
+      desc: 'AI is embedded in your leadership agenda — woven into strategy, governance, capability building, and measured outcomes. You run AI as a system, not a campaign.',
+      highlights: [
+        '<strong>Strategic Integration</strong> — AI is explicitly written into your function\'s strategy and priorities, not bolted on.',
+        '<strong>Systemic Governance</strong> — You have clear, applied guidelines: data handling, risk tiers, review checkpoints, and accountability.',
+        '<strong>Deliberate Capability Building</strong> — You fund and track a role-mapped upskilling plan; capability isn\'t left to chance.',
+        '<strong>Measured Value</strong> — You measure AI\'s impact against baselines and can quantify efficiency, quality, and coverage gains.'
+      ],
+      blockers: [
+        '<strong>System is Functional, Not Yet Compounding</strong> — You run AI well inside your function, but its value hasn\'t yet rippled outward to other functions or become an org-level asset.',
+        '<strong>Governance Maintenance</strong> — Governance exists but needs continuous updating as tools and risks evolve. Without a review cadence, it\'ll drift.',
+        '<strong>Talent Risk</strong> — Your system depends on a few capable people (including you). Depth and succession aren\'t ensured.',
+        '<strong>Value Communication</strong> — You measure value, but translating it into language executives resource is still a work in progress.'
+      ],
+      next: [
+        '<strong>Make It a Cross-Functional Asset</strong> — Identify one way your AI system can serve another function. Spread proven patterns, not just results.',
+        '<strong>Institutionalize Governance Reviews</strong> — Set a quarterly review cadence: which guidelines held, which need updating, what new risks emerged.',
+        '<strong>Build Bench Depth</strong> — Develop AI champions below you and document the system so it survives leadership transitions.',
+        '<strong>Sharpen the Executive Narrative</strong> — Translate measured outcomes into a crisp executive story: "AI saved X, improved Y, enabling Z." This unlocks resources.',
+        '<strong>Recommended Learning</strong> — Search LinkedIn Learning for "AI Strategy for Leaders" and "Driving Organizational Change" to scale from functional system to organizational capability.'
+      ]
+    },
+    L5: {
+      name: 'Asset-Based',
+      desc: 'You\'ve made AI a strategic organizational asset. It shapes how your function builds capability, makes decisions, governs risk, and creates advantage. AI leadership is embedded in the culture, not dependent on you alone.',
+      highlights: [
+        '<strong>Strategic Asset Mindset</strong> — You treat AI capability as durable organizational capital, not a project. It\'s funded, maintained, and grown like any core asset.',
+        '<strong>Cultural Embeddedness</strong> — AI-informed working is "how we do things here," sustained by norms, incentives, and shared standards — not by your personal championing.',
+        '<strong>Compounding Value</strong> — AI\'s impact is measured, communicated, and reinvested. Each cycle makes the next more ambitious.',
+        '<strong>Org-Level Influence</strong> — Your function\'s AI practices are a reference point for the broader organization. You shape standards beyond your team.'
+      ],
+      blockers: [
+        '<strong>Frontier Risk</strong> — AI capabilities leap every quarter. Without architectural flexibility, today\'s asset depreciates fast.',
+        '<strong>Scaling Is a Different Game</strong> — What works in your function doesn\'t automatically transfer. Spreading it requires adapting to other teams\' realities.',
+        '<strong>Sustainability vs. Momentum</strong> — Mature systems can ossify if they stop experimenting. The asset must keep evolving.',
+        '<strong>Influence Beyond Authority</strong> — As AI leadership spreads org-wide, you lead through influence, not control — a different leadership muscle.'
+      ],
+      next: [
+        '<strong>Architect for Change</strong> — Design your AI system for modularity and upgradeability so it absorbs new capabilities without rework.',
+        '<strong>Lead the Org Conversation</strong> — Use your function as a proof point to shape org-wide AI strategy, governance, and standards.',
+        '<strong>Protect Experimentation</strong> — Even at maturity, carve out capacity for frontier experiments. Mature assets still need R&D.',
+        '<strong>Build Influence Capacity</strong> — Invest in the storytelling, alliances, and shared metrics that let you lead beyond your formal authority.',
+        '<strong>Recommended Learning</strong> — Search LinkedIn Learning for "AI Transformation Leadership" and "Leading Digital Transformation" to lead AI as an enterprise capability.'
+      ]
+    }
+  },
+  zh: {
+    L1: {
+      name: '指令型',
+      desc: '你意识到AI对HR的意义，但它还没进入你的领导方式。决策和团队方向仍按传统方式做出；AI是"大家可以试试的东西"，而非你领导议程的一部分。',
+      highlights: [
+        '<strong>觉察力</strong> — 你认识到AI与你的职能相关且将日益重要。这份觉察就是起点。',
+        '<strong>开放姿态</strong> — 你没有关上AI的门；团队并未被禁止实验。',
+        '<strong>诚实的基线</strong> — 你没有假装在AI上领先。这种清醒是诚实成长的前提。'
+      ],
+      blockers: [
+        '<strong>缺少领导信号</strong> — 没有你的赞助，团队会从别处寻找信号。你职能内的AI采纳将停留在机会主义和浅层。',
+        '<strong>决策悬空</strong> — 治理、风险、"这里到底该不该用AI"这些问题无人认领。潜在风险（偏差、隐私、合规）在无人管理中增长。',
+        '<strong>价值不可见</strong> — 你无法为AI争取资源，因为没有证据证明它能做什么。在预算周期里，AI输给那些能量化的东西。',
+        '<strong>个人盲区</strong> — 你尚未建立个人熟练度，因此无法评估AI的说法、审查提案或辅导团队。'
+      ],
+      next: [
+        '<strong>先建立个人熟练度</strong> — 用两周时间在真实任务上使用AI。你无法领导自己没碰过的东西。',
+        '<strong>选一个试点来赞助</strong> — 挑一个低风险、高可见度的场景，保护时间和预算。领导力体现为赞助，不是口号。',
+        '<strong>为你的职能设定清晰的"为何用AI"</strong> — 用一段话说清AI今年应为你的团队做什么，并分享给团队。',
+        '<strong>推荐学习</strong> — LinkedIn Learning 搜索 "AI for Leaders" 和 "AI Strategy Fundamentals"，建立领导者层级的基础认知。'
+      ]
+    },
+    L2: {
+      name: '结构型',
+      desc: '你个人在用AI，也看到了它的分量，但它还没成为领导优先事项。团队的AI使用参差不齐——靠个人爱好者驱动，而非你的方向。',
+      highlights: [
+        '<strong>个人实践</strong> — 你自己在用AI，所以对它价值的判断是落地的，而非纸上谈兵。',
+        '<strong>战略性认知</strong> — 你看到AI不只是效率工具，而是领导力命题（能力、治理、优势）。这种认知很稀缺。',
+        '<strong>可信度</strong> — 因为你自己在用，未来你把它列为优先事项时，团队会听。'
+      ],
+      blockers: [
+        '<strong>尚未优先化</strong> — 你看到了分量，但还没把AI明确为优先事项。团队读不懂你的心思，努力依旧分散。',
+        '<strong>领导真空</strong> — 爱好者冲在前面，其他人观望。没有你的方向，会出现影子AI使用、重复劳动、质量不一。',
+        '<strong>没有治理立场</strong> — 你不画线，大家就靠猜。有人因担心风险回避AI，有人则鲁莽使用。',
+        '<strong>个人 vs. 组织</strong> — 你的技能停留在个人层面。不转化为团队期望，就不会复利增长。'
+      ],
+      next: [
+        '<strong>把AI明确为优先事项</strong> — 在本季度团队优先事项中点名它。被点名的才会被投入资源。',
+        '<strong>设护栏，不是禁令</strong> — 定义简单的绿/黄/红框架：什么场景安全用AI、什么需要审查、什么禁止。公开它。',
+        '<strong>刻意赞助</strong> — 从被动鼓励转向主动赞助：保护时间、资助试点、清除障碍。',
+        '<strong>把个人技能转化为团队期望</strong> — 设定基线期望（如"每个人都在X场景上试试AI"）并以身作则。',
+        '<strong>推荐学习</strong> — LinkedIn Learning 搜索 "Leading AI Initiatives" 和 "AI Governance Essentials"，从个人使用走向团队方向。'
+      ]
+    },
+    L3: {
+      name: '协作型',
+      desc: '你积极推动AI——赞助试点、在自己的决策中使用AI、并开始形成治理。AI已进入你的领导议程，但体系和衡量仍在成型中。',
+      highlights: [
+        '<strong>主动赞助</strong> — 你不只是允许AI，你赞助它。试点有时间保护、负责人和你的可见背书。',
+        '<strong>AI辅助领导</strong> — 你用AI压力测试自己的决策。你在以身作则。',
+        '<strong>治理在推进</strong> — 你已开始界定安全使用边界。团队知道有红线，即便仍在勾勒中。',
+        '<strong>变革催化</strong> — 你的姿态把团队从"该不该用"推向"该怎么用"。'
+      ],
+      blockers: [
+        '<strong>是试点，不是组合</strong> — 你赞助的是单个试点，而非有共享学习和负责人的协调组合。',
+        '<strong>治理是草稿，不是准则</strong> — 指引存在但未一致执行或审查。边缘案例仍是临时处理。',
+        '<strong>无结果衡量</strong> — 你能说出活动量（跑了试点、培训了人），但说不出结果（效率、质量、ROI）。这限制了规模化与正当性。',
+        '<strong>个人推动，非系统</strong> — 进展仍重度依赖你。你退后一步，势头就会放缓。'
+      ],
+      next: [
+        '<strong>从试点到组合</strong> — 把AI项目协调成组合：共享负责人、里程碑，以及把学习在团队内传播的机制。',
+        '<strong>固化治理</strong> — 把草稿指引变为团队准则：风险分级、审查节点、数据处理规则、明确问责。',
+        '<strong>开始衡量结果</strong> — 定义2-3个基线指标（时间、质量、覆盖度），据此衡量AI项目。证据把倡导变成资源。',
+        '<strong>建立冗余</strong> — 确保团队能在没有你时维持AI势头。文档化、授权、培养你之下的AI推动者。',
+        '<strong>推荐学习</strong> — LinkedIn Learning 搜索 "Scaling AI in Organizations" 和 "Building a Data-Driven Culture"，从推动者走向系统构建者。'
+      ]
+    },
+    L4: {
+      name: '系统型',
+      desc: 'AI已嵌入你的领导议程——贯穿战略、治理、能力建设和结果衡量。你把AI当作系统来运营，而非一场运动。',
+      highlights: [
+        '<strong>战略整合</strong> — AI已明确写入你职能的战略和优先事项，而非外加。',
+        '<strong>系统性治理</strong> — 你有清晰、可执行的指引：数据处理、风险分级、审查节点、问责。',
+        '<strong>刻意的能力建设</strong> — 你资助并追踪按角色映射的能力提升计划；能力不靠运气。',
+        '<strong>可衡量的价值</strong> — 你对照基线衡量AI影响，能量化效率、质量、覆盖度的提升。'
+      ],
+      blockers: [
+        '<strong>系统在运转，但尚未复利</strong> — 你在职能内把AI运营得很好，但它的价值还没外溢到其他职能，或成为组织级资产。',
+        '<strong>治理维护</strong> — 治理存在，但随工具和风险演进需要持续更新。没有审查节奏就会漂移。',
+        '<strong>人才风险</strong> — 你的系统依赖少数有能力的人（包括你）。深度和接班没有保障。',
+        '<strong>价值沟通</strong> — 你在衡量价值，但把它翻译成高管愿意投入资源的语言仍是进行时。'
+      ],
+      next: [
+        '<strong>让它成为跨职能资产</strong> — 找到一种方式让你的AI系统服务另一个职能。传播的是经过验证的模式，而不只是结果。',
+        '<strong>把治理审查制度化</strong> — 设季度审查节奏：哪些指引成立、哪些需更新、出现什么新风险。',
+        '<strong>建设梯队深度</strong> — 培养你之下的AI推动者，并把系统文档化，使其经得起领导层更替。',
+        '<strong>磨砺高管叙事</strong> — 把衡量结果翻译成精炼的高管故事："AI省了X，提升了Y，使Z成为可能。"这能解锁资源。',
+        '<strong>推荐学习</strong> — LinkedIn Learning 搜索 "AI Strategy for Leaders" 和 "Driving Organizational Change"，从职能系统扩展到组织能力。'
+      ]
+    },
+    L5: {
+      name: '资产型',
+      desc: '你已把AI打造成战略性的组织资产。它塑造你的职能如何建设能力、做决策、治理风险、创造优势。AI领导力已嵌入文化，而非依赖你个人。',
+      highlights: [
+        '<strong>战略资产思维</strong> — 你把AI能力当作持久的组织资本，而非项目。它像核心资产一样被资助、维护和增长。',
+        '<strong>文化嵌入</strong> — AI驱动的工作是"我们这里的做事方式"，由规范、激励和共享标准维系——而非靠你个人推动。',
+        '<strong>复利价值</strong> — AI的影响被衡量、沟通和再投资。每个周期让下一个周期更有雄心。',
+        '<strong>组织级影响</strong> — 你职能的AI实践是更广泛组织的参照点。你塑造超越本团队的标准。'
+      ],
+      blockers: [
+        '<strong>前沿风险</strong> — AI能力每季度跃升。没有架构弹性，今天的资产会快速折旧。',
+        '<strong>规模化是另一回事</strong> — 在你职能上行得通的不会自动迁移。传播需要适配其他团队的现实。',
+        '<strong>可持续 vs. 势头</strong> — 成熟系统若停止实验会僵化。资产必须持续演进。',
+        '<strong>超越权威的影响力</strong> — 当AI领导力扩散到全组织，你靠影响力而非控制力领导——这是不同的领导力肌肉。'
+      ],
+      next: [
+        '<strong>为变化而架构</strong> — 把AI系统设计成模块化、可升级的，使其能吸收新能力而无需重做。',
+        '<strong>引领组织对话</strong> — 用你的职能作为实证，塑造全组织的AI战略、治理和标准。',
+        '<strong>保护实验</strong> — 即便成熟，也要为前沿实验留出产能。成熟资产仍需研发。',
+        '<strong>建设影响力能力</strong> — 投资于叙事、联盟和共享指标，让你能超越正式职权去领导。',
+        '<strong>推荐学习</strong> — LinkedIn Learning 搜索 "AI Transformation Leadership" 和 "Leading Digital Transformation"，以企业能力的高度领导AI。'
+      ]
+    }
+  }
+};
+
+const roleAdvice = {
+  en: {
+    GA: {
+      label: 'G&A Leader',
+      advice: [
+        '<strong>Lead AI Where Knowledge & Compliance Live</strong> — G&A is document- and policy-dense. Lead by turning scattered policies, cases, and precedents into an AI-searchable knowledge system; the highest-leverage AI wins in your function come from knowledge work, not physical processes.',
+        '<strong>Key Scenarios</strong> — Sponsor an AI policy/compliance Q&A system; AI-assisted finance close and reporting; HR analytics and employee-service agents; cross-functional governance standards.',
+        '<strong>Governance Is Your Home Turf</strong> — G&A often owns or co-owns compliance, so you\'re uniquely positioned to set AI governance that the rest of the org adopts. Lead by example: your function\'s guardrails become the template.',
+        '<strong>Watch the Sensitive-Data Trap</strong> — HR and Finance handle the most sensitive data. Make anonymization-before-AI a hard norm, not a suggestion — a single leak undermines AI trust org-wide.'
+      ]
+    },
+    RD: {
+      label: 'R&D Leader',
+      advice: [
+        '<strong>Lead AI Where You Build Things</strong> — R&D\'s leverage is AI-augmented engineering and research: code and design assistants, technical knowledge retrieval, and faster experimentation cycles. Your teams are likely already fluent — your job is to turn scattered use into a deliberate capability.',
+        '<strong>Key Scenarios</strong> — Sponsor an internal AI tooling platform for engineers; AI-assisted literature and patent review; design-space exploration; standardized prompt and agent libraries shared across teams.',
+        '<strong>Raise the Governance Floor for Technical Risk</strong> — R&D uses AI on proprietary IP and unverified outputs. Set clear rules: AI-generated code and design must be reviewed, AI-sourced facts must be verified, and IP-sensitive data has strict boundaries.',
+        '<strong>Be the Capability Multiplier</strong> — R&D often becomes the org\'s AI tooling provider. Lead by building reusable tools, agents, and practices other functions adopt — your leadership leverage is platform-building, not just personal use.'
+      ]
+    },
+    SM: {
+      label: 'Sales & Marketing Leader',
+      advice: [
+        '<strong>Lead AI Where Customer Insight & Content Live</strong> — Sales & Marketing is one of the highest-ROI AI territories: customer insight synthesis, content generation, campaign analytics, personalization, and lead prioritization. Lead by sponsoring AI that compounds across the funnel.',
+        '<strong>Key Scenarios</strong> — Sponsor AI-assisted market and customer insight; content and creative generation with brand guardrails; sales-call prep and lead scoring; campaign performance forecasting.',
+        '<strong>Guard Brand and Truth</strong> — Marketing moves fast with AI-generated content, so your governance priority is brand consistency and factual accuracy. Set review checkpoints before external publishing — AI hallucinations in public content damage brand trust directly.',
+        '<strong>Measure From Day One</strong> — Sales & Marketing can prove AI ROI faster than almost any function (conversion, content velocity, pipeline). Lead with data: your measured outcomes make the case for AI resourcing org-wide.'
+      ]
+    },
+    IT: {
+      label: 'IT Leader',
+      advice: [
+        '<strong>Lead AI as the Org\'s Capability Architect</strong> — IT is naturally the AI architect for the entire organization. Lead by designing the AI enablement plan: infrastructure, tool access, security, and adoption paths for every function — not just your own team.',
+        '<strong>Key Scenarios</strong> — Sponsor AI infrastructure and platform; lead tool selection, security review, and integration; build the org-wide AI adoption roadmap; set the data architecture that makes AI usable and safe.',
+        '<strong>Governance Is Core, Not Adjacent</strong> — For IT, AI governance isn\'t a side task — it\'s central to your mandate. Own data classification, access controls, audit trails, and the security model. If IT doesn\'t set the standard, shadow AI will set its own.',
+        '<strong>Lead Enablement, Not Gatekeeping</strong> — The temptation is to lock AI down for safety. Lead by enabling safe access: friction-free approved tools, clear green/yellow/red guidance, and training. Enablement earns adoption; gatekeeping drives it underground.'
+      ]
+    },
+    PR: {
+      label: 'Production Leader',
+      advice: [
+        '<strong>Lead AI Where Physical and Digital Systems Meet</strong> — Production\'s AI leverage sits at the interface of physical operations and data: predictive maintenance, quality inspection (vision), process optimization, and workforce support. Lead by sponsoring AI that improves safety, quality, and throughput — not just desk work.',
+        '<strong>Key Scenarios</strong> — Sponsor AI-assisted quality inspection; predictive maintenance; supply and demand forecasting; AI work-instructions and training for operators; bottleneck analysis.',
+        '<strong>Safety and Reliability Come First</strong> — In production, an AI error can cause physical harm or stoppage. Your governance priority is human-in-the-loop on safety-critical decisions, validated models, and clear fallback to manual. Never let AI bypass safety review.',
+        '<strong>Bring Operators Along</strong> — Production success depends on frontline adoption. Lead by co-designing AI tools with operators, showing concrete time and safety wins, and addressing job-security concerns directly. AI that desk workers didn\'t build won\'t survive the shop floor.'
+      ]
+    }
+  },
+  zh: {
+    GA: {
+      label: 'G&A 负责人',
+      advice: [
+        '<strong>在知识与合规所在之处领导AI</strong> — G&A文档与政策密集。把分散的政策、案例、判例转化为AI可检索的知识系统来引领；你职能里AI最大的杠杆来自知识工作，而非物理流程。',
+        '<strong>重点场景</strong> — 赞助AI政策合规问答系统；AI辅助财务结账与报表；HR分析与员工服务Agent；跨职能治理标准。',
+        '<strong>治理是你的主场</strong> — G&A通常拥有或共管合规，因此你最有条件制定全组织采纳的AI治理。以身作则：你职能的护栏成为模板。',
+        '<strong>警惕敏感数据陷阱</strong> — HR和财务处理最敏感的数据。把"用AI前先脱敏"变成硬性规范，而非建议——一次泄露就会动摇全组织对AI的信任。'
+      ]
+    },
+    RD: {
+      label: 'R&D 负责人',
+      advice: [
+        '<strong>在你构建产品的地方领导AI</strong> — R&D的杠杆是AI增强的工程与研究：代码与设计助手、技术知识检索、更快的实验循环。你的团队可能已经熟练——你的任务是把零散使用变成刻意的能力。',
+        '<strong>重点场景</strong> — 赞助面向工程师的内部AI工具平台；AI辅助文献与专利审查；设计空间探索；跨团队共享的提示词与Agent库。',
+        '<strong>抬高技术风险的治理底线</strong> — R&D在专有IP和未验证输出上使用AI。设清晰规则：AI生成的代码与设计必须审查，AI来源的事实必须核验，IP敏感数据有严格边界。',
+        '<strong>做能力的放大器</strong> — R&D常成为组织的AI工具提供者。通过构建其他职能可复用的工具、Agent与实践来引领——你的领导杠杆是平台化建设，而非个人使用。'
+      ]
+    },
+    SM: {
+      label: '销售与市场负责人',
+      advice: [
+        '<strong>在客户洞察与内容所在之处领导AI</strong> — 销售与市场是AI投资回报最高的领域之一：客户洞察综合、内容生成、活动分析、个性化、线索优先级。赞助能在整个漏斗复利的AI来引领。',
+        '<strong>重点场景</strong> — 赞助AI辅助市场与客户洞察；带品牌护栏的内容与创意生成；销售拜访准备与线索打分；活动表现预测。',
+        '<strong>守护品牌与真相</strong> — 市场用AI生成内容节奏很快，因此治理重点是品牌一致性和事实准确性。在外部发布前设审查节点——公开内容中的AI幻觉会直接损害品牌信任。',
+        '<strong>从第一天就衡量</strong> — 销售与市场比几乎任何职能都更能快速证明AI的ROI（转化、内容速度、管线）。用数据领导：你衡量的结果为全组织的AI资源投入提供论据。'
+      ]
+    },
+    IT: {
+      label: 'IT 负责人',
+      advice: [
+        '<strong>作为组织的能力架构师领导AI</strong> — IT天然是全组织的AI架构师。为每个职能设计AI赋能方案来引领：基础设施、工具接入、安全、采纳路径——不只是为你自己的团队。',
+        '<strong>重点场景</strong> — 赞助AI基础设施与平台；主导工具选型、安全审查与集成；制定全组织AI采纳路线图；设定让AI可用且安全的数据架构。',
+        '<strong>治理是核心，不是附属</strong> — 对IT而言，AI治理不是旁支任务，而是你职责的核心。拥有数据分级、访问控制、审计轨迹和安全模型。IT不定标准，影子AI就会自己定。',
+        '<strong>做赋能而非设卡</strong> — 诱惑是为安全而锁死AI。通过赋能安全接入来引领：低摩擦的获批工具、清晰的绿/黄/红指引、培训。赋能赢得采纳；设卡只会把使用逼到地下。'
+      ]
+    },
+    PR: {
+      label: '生产负责人',
+      advice: [
+        '<strong>在物理与数字系统交汇处领导AI</strong> — 生产的AI杠杆在物理运营与数据的接口：预测性维护、质量检测（视觉）、流程优化、一线支持。赞助能提升安全、质量、产出的AI来引领——不只是桌面工作。',
+        '<strong>重点场景</strong> — 赞助AI辅助质量检测；预测性维护；供需预测；面向操作员的AI作业指导与培训；瓶颈分析。',
+        '<strong>安全与可靠优先</strong> — 在生产中，AI错误可能造成人身伤害或停线。你的治理重点是安全关键决策的人机协同、经过验证的模型、清晰的人工兜底。绝不让AI绕过安全审查。',
+        '<strong>把操作员带上</strong> — 生产的成功依赖一线采纳。与操作员共同设计AI工具、展示具体的时间与安全收益、正面回应岗位安全担忧来引领。桌面工作者没参与构建的AI，活不过车间。'
+      ]
+    }
+  }
+};
+
+const q1Values = ['GA', 'RD', 'SM', 'IT', 'PR'];
+const labels = ['A', 'B', 'C', 'D', 'E'];
+
+function t(key) { return i18n[currentLang][key]; }
+
+function buildQuestions() {
+  var container = document.getElementById('questions-container');
+  container.innerHTML = '';
+  var qConfigs = [
+    { num: 1, labelKey: 'q1Label', titleKey: 'q1Title', optKey: 'q1Options', values: q1Values, isFirst: true },
+    { num: 2, labelKey: 'q2Label', titleKey: 'q2Title', optKey: 'q2Options', values: ['1','2','3','4','5'] },
+    { num: 3, labelKey: 'q3Label', titleKey: 'q3Title', optKey: 'q3Options', values: ['1','2','3','4','5'] },
+    { num: 4, labelKey: 'q4Label', titleKey: 'q4Title', optKey: 'q4Options', values: ['1','2','3','4','5'] },
+    { num: 5, labelKey: 'q5Label', titleKey: 'q5Title', optKey: 'q5Options', values: ['1','2','3','4','5'] },
+    { num: 6, labelKey: 'q6Label', titleKey: 'q6Title', optKey: 'q6Options', values: ['1','2','3','4','5'] },
+    { num: 7, labelKey: 'q7Label', titleKey: 'q7Title', optKey: 'q7Options', values: ['1','2','3','4','5'] },
+    { num: 8, labelKey: 'q8Label', titleKey: 'q8Title', optKey: 'q8Options', values: ['1','2','3','4','5'], isLast: true }
+  ];
+
+  qConfigs.forEach(function(q) {
+    var active = q.num === currentQ ? ' active' : '';
+    var opts = t(q.optKey);
+    var optsHTML = opts.map(function(text, idx) {
+      var sel = answers[q.num] === q.values[idx] ? ' selected' : '';
+      return '<div class="option' + sel + '" data-value="' + q.values[idx] + '" data-label="' + labels[idx] + '">' + text + '</div>';
+    }).join('');
+
+    var navHTML = '<div class="nav-buttons">';
+    if (q.isFirst) {
+      navHTML += '<div></div>';
+      navHTML += '<button class="btn btn-primary" onclick="nextQuestion()"' + (!answers[q.num] ? ' disabled' : '') + '>' + t('next') + '</button>';
+    } else if (q.isLast) {
+      navHTML += '<button class="btn btn-secondary" onclick="prevQuestion()">' + t('prev') + '</button>';
+      navHTML += '<button class="btn btn-submit" onclick="submitQuiz()"' + (!answers[q.num] ? ' disabled' : '') + '>' + t('submit') + '</button>';
+    } else {
+      navHTML += '<button class="btn btn-secondary" onclick="prevQuestion()">' + t('prev') + '</button>';
+      navHTML += '<button class="btn btn-primary" onclick="nextQuestion()"' + (!answers[q.num] ? ' disabled' : '') + '>' + t('next') + '</button>';
+    }
+    navHTML += '</div>';
+
+    var cardHTML = '<div class="question-card' + active + '" data-question="' + q.num + '">' +
+      '<span class="q-label">' + t(q.labelKey) + '</span>' +
+      '<h2>' + t(q.titleKey) + '</h2>' +
+      '<div class="options">' + optsHTML + '</div>' +
+      navHTML + '</div>';
+    container.insertAdjacentHTML('beforeend', cardHTML);
+  });
+
+  container.querySelectorAll('.option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      var card = this.closest('.question-card');
+      card.querySelectorAll('.option').forEach(function(o) { o.classList.remove('selected'); });
+      this.classList.add('selected');
+      var qNum = parseInt(card.dataset.question);
+      answers[qNum] = this.dataset.value;
+      var btn = card.querySelector('.btn-primary, .btn-submit');
+      if (btn) btn.disabled = false;
+    });
+  });
+}
+
+function applyLang() {
+  document.getElementById('wm').textContent = t('wm');
+  document.getElementById('header-eyebrow').textContent = t('eyebrow');
+  document.getElementById('header-title').textContent = t('title');
+  document.getElementById('header-subtitle').textContent = t('subtitle');
+  document.getElementById('highlights-title').textContent = t('highlightsTitle');
+  document.getElementById('blockers-title').textContent = t('blockersTitle');
+  document.getElementById('nextsteps-title').textContent = t('nextStepsTitle');
+  document.getElementById('role-title').textContent = t('roleTitle');
+  document.getElementById('cta-text').textContent = t('ctaText');
+  document.getElementById('btn-learn').textContent = t('learnBtn');
+  document.getElementById('btn-restart').textContent = t('restart');
+  document.documentElement.lang = currentLang === 'en' ? 'en' : 'zh-CN';
+  document.title = currentLang === 'en' ? 'AI Assessment · Leadership' : 'AI 测评 · 领导力';
+  buildQuestions();
+}
+
+function switchLang(lang) {
+  currentLang = lang;
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+  applyLang();
+  if (document.getElementById('results-page').classList.contains('active')) {
+    showResults();
+  }
+}
+
+function updateProgress() {
+  var pct = (currentQ / totalQ) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('step-indicator').textContent = currentQ + ' / ' + totalQ;
+}
+
+function showQuestion(num) {
+  document.querySelectorAll('.question-card').forEach(function(c) { c.classList.remove('active'); });
+  var target = document.querySelector('[data-question="' + num + '"]');
+  if (target) target.classList.add('active');
+  currentQ = num;
+  updateProgress();
+}
+
+function nextQuestion() {
+  if (currentQ < totalQ) showQuestion(currentQ + 1);
+}
+
+function prevQuestion() {
+  if (currentQ > 1) showQuestion(currentQ - 1);
+}
+
+function calculateLevel() {
+  var scoreQ2to7 = 0;
+  for (var i = 2; i <= 7; i++) {
+    scoreQ2to7 += parseInt(answers[i] || 0);
+  }
+  var scoreQ8 = parseInt(answers[8] || 0);
+  var finalScore = (scoreQ2to7 / 30) * 80 + (scoreQ8 / 5) * 20;
+
+  var level;
+  if (finalScore <= 25) level = 'L1';
+  else if (finalScore <= 45) level = 'L2';
+  else if (finalScore <= 65) level = 'L3';
+  else if (finalScore <= 82) level = 'L4';
+  else level = 'L5';
+
+  return { level: level, score: Math.round(finalScore) };
+}
+
+function submitQuiz() {
+  if (!answers[8]) return;
+
+  var result = calculateLevel();
+  computedLevel = result.level;
+  computedScore = result.score;
+
+  document.querySelectorAll('.question-card').forEach(function(c) { c.classList.remove('active'); });
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('header-title').style.display = 'none';
+  document.getElementById('header-subtitle').style.display = 'none';
+  showResults();
+  launchRibbons();
+}
+
+function showResults() {
+  var data = levelData[currentLang][computedLevel];
+  var role = answers[1] || 'GA';
+  var roleData = roleAdvice[currentLang][role];
+
+  var levelNum = parseInt(computedLevel.replace('L', ''));
+  var names = [levelData[currentLang].L1.name, levelData[currentLang].L2.name, levelData[currentLang].L3.name, levelData[currentLang].L4.name, levelData[currentLang].L5.name];
+  var trackHTML = '';
+  for (var i = 1; i <= 5; i++) {
+    var cls = i < levelNum ? 'reached' : (i === levelNum ? 'current' : '');
+    var labelCls = i === levelNum ? 'current-label' : '';
+    trackHTML += '<div class="track-node"><div class="node ' + cls + '">L' + i + '</div><span class="node-label ' + labelCls + '">' + names[i-1] + '</span></div>';
+  }
+
+  document.getElementById('result-hero').innerHTML =
+    '<div class="score-badge">' + t('scoreBadge') + ' ' + computedScore + ' / 100</div>' +
+    '<h2>' + computedLevel + ' | <span class="level-name">' + data.name + '</span></h2>' +
+    '<div class="level-track">' + trackHTML + '</div>' +
+    '<p class="desc">' + data.desc + '</p>';
+
+  document.getElementById('highlights-list').innerHTML = data.highlights.map(function(h) { return '<li>' + h + '</li>'; }).join('');
+  document.getElementById('blockers-list').innerHTML = data.blockers.map(function(b) { return '<li>' + b + '</li>'; }).join('');
+  document.getElementById('next-list').innerHTML = data.next.map(function(n) { return '<li>' + n + '</li>'; }).join('');
+
+  document.getElementById('role-badge').textContent = roleData.label;
+  document.getElementById('role-list').innerHTML = roleData.advice.map(function(a) { return '<li>' + a + '</li>'; }).join('');
+
+  document.getElementById('results-page').classList.add('active');
+  animateScore();
+}
+
+function restart() {
+  Object.keys(answers).forEach(function(k) { delete answers[k]; });
+  currentQ = 1;
+  document.getElementById('results-page').classList.remove('active');
+  document.getElementById('progress-wrap').style.display = '';
+  document.getElementById('header-title').style.display = '';
+  document.getElementById('header-subtitle').style.display = '';
+  applyLang();
+  updateProgress();
+}
+
+function animateScore() {
+  var badge = document.querySelector('#result-hero .score-badge');
+  if (!badge) return;
+  var label = t('scoreBadge') + ' ';
+  badge.textContent = label + '0 / 100';
+  var start = null, dur = 900;
+  function step(ts) {
+    if (!start) start = ts;
+    var p = Math.min((ts - start) / dur, 1);
+    var eased = 1 - Math.pow(1 - p, 3);
+    badge.textContent = label + Math.round(computedScore * eased) + ' / 100';
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+applyLang();
+updateProgress();
+function launchRibbons() {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var old = document.querySelector('.ribbon-overlay');
+  if (old) old.remove();
+  var colors = ['#0071e3', '#2997ff', '#34c759', '#ffcc00', '#ff9f0a', '#ff375f', '#af52de'];
+  var overlay = document.createElement('div');
+  overlay.className = 'ribbon-overlay';
+  for (var i = 0; i < 34; i++) {
+    var r = document.createElement('div');
+    r.className = 'ribbon';
+    r.style.left = (Math.random() * 100) + '%';
+    var isStream = Math.random() < 0.22;
+    r.style.width = (isStream ? 5 + Math.random() * 2 : 6 + Math.random() * 4) + 'px';
+    r.style.height = (isStream ? 52 + Math.random() * 34 : 16 + Math.random() * 22) + 'px';
+    r.style.setProperty('--fall', (2.3 + Math.random() * 1.3) + 's');
+    r.style.setProperty('--delay', (Math.random() * 0.9) + 's');
+    r.style.setProperty('--sway', (Math.random() * 180 - 90) + 'px');
+    r.style.setProperty('--spin', (Math.random() < 0.5 ? '-' : '') + (300 + Math.floor(Math.random() * 500)) + 'deg');
+    r.style.setProperty('--tumble', (0.6 + Math.random() * 0.7) + 's');
+    var s = document.createElement('i');
+    s.style.background = colors[i % colors.length];
+    r.appendChild(s);
+    overlay.appendChild(r);
+  }
+  document.body.appendChild(overlay);
+  setTimeout(function() { overlay.remove(); }, 4800);
+}
+</script>
+</body>
+</html>

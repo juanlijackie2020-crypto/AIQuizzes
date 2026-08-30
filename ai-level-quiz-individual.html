@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Assessment · Individual</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #fbfbfd;
+  --surface: #ffffff;
+  --surface-2: #f5f5f7;
+  --surface-raised: #ffffff;
+  --surface-hover: #f5f5f7;
+  --text: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-muted: #86868b;
+  --accent: #0071e3;
+  --accent-dark: #0077ed;
+  --accent-light: #2997ff;
+  --accent-bg: rgba(0, 113, 227, 0.08);
+  --accent-border: rgba(0, 113, 227, 0.22);
+  --green: #34c759;
+  --green-bg: rgba(52, 199, 89, 0.1);
+  --green-border: rgba(52, 199, 89, 0.25);
+  --red: #ff3b30;
+  --red-bg: rgba(255, 59, 48, 0.08);
+  --blue: #0071e3;
+  --blue-bg: rgba(0, 113, 227, 0.08);
+  --blue-border: rgba(0, 113, 227, 0.22);
+  --border: #d2d2d7;
+  --border-light: #e8e8ed;
+  --radius: 22px;
+  --radius-sm: 14px;
+  --pill: 980px;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px 24px 64px;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* Top bar */
+.bar { display: flex; align-items: center; justify-content: space-between; max-width: 680px; margin: 0 auto; padding: 28px 24px 0; }
+.wm { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); display: flex; align-items: center; gap: 9px; text-decoration: none; }
+.wm .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.seg { display: inline-flex; background: var(--surface-2); border-radius: var(--pill); padding: 2px; }
+.seg button { border: none; background: transparent; color: var(--text-muted); font: inherit; font-size: 13px; font-weight: 600; padding: 5px 14px; border-radius: var(--pill); cursor: pointer; transition: all .2s; }
+.seg button.active { background: var(--text); color: #fff; }
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:0.04em;color:var(--accent);margin-bottom:14px;text-transform:uppercase;text-align:center;}
+
+.header h1 {
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+
+.header p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Progress */
+.progress-wrap {
+  margin-bottom: 32px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 1px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0%;
+}
+
+.step-indicator {
+  text-align: right;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+}
+
+/* Question Card */
+.question-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 36px 32px;
+  border: 1px solid var(--border);
+  display: none;
+  animation: slideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.question-card.active { display: block; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.question-card .q-label {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.question-card h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 26px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+/* Options */
+.options { display: flex; flex-direction: column; gap: 8px; }
+
+.option {
+  padding: 13px 16px 13px 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  line-height: 1.6;
+  position: relative;
+  color: var(--text-secondary);
+  background: var(--surface);
+}
+
+.option::before {
+  content: attr(data-label);
+  position: absolute;
+  left: 12px;
+  top: 13px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.option:hover {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--text);
+}
+
+.option:hover::before {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.option.selected {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  color: var(--text);
+}
+
+.option.selected::before {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+/* Navigation */
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+
+.btn {
+  padding: 11px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.btn-primary:hover { background: var(--accent-light); }
+.btn-primary:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-muted);
+  padding: 11px 16px;
+}
+
+.btn-secondary:hover { color: var(--text); }
+
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  font-size: 15px;
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+}
+
+.btn-submit:hover {
+  background: var(--accent-light);
+}
+
+/* Results */
+.results-page {
+  display: none;
+  animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.results-page.active { display: block; }
+
+.result-hero {
+  text-align: center;
+  padding: 44px 32px 36px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.result-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent);
+}
+
+.result-hero .score-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 16px;
+  letter-spacing: 0.3px;
+}
+
+.result-hero h2 {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.result-hero .level-name { color: var(--accent); }
+
+.result-hero .desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 460px;
+  margin: 12px auto 0;
+  line-height: 1.8;
+}
+
+/* Level Track */
+.level-track {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: 28px 0 8px;
+  position: relative;
+}
+
+.level-track::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: var(--border);
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.track-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.track-node .node {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  transition: all 0.4s ease;
+}
+
+.track-node .node.reached {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.track-node .node.current {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+  transform: scale(1.18);
+}
+
+.track-node .node-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.track-node .node-label.current-label {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Report Cards */
+.report-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 26px 26px;
+  margin-bottom: 12px;
+}
+
+.report-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.report-card h3 .title-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.report-card.highlights h3 .title-icon { color: var(--accent-light); }
+.report-card.blockers h3 .title-icon { color: var(--red); }
+.report-card.nextsteps h3 .title-icon { color: var(--green); }
+.report-card.role-advice h3 .title-icon { color: var(--blue); }
+
+.report-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.report-card ul li {
+  padding: 10px 0;
+  padding-left: 14px;
+  position: relative;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.report-card ul li:last-child { border-bottom: none; padding-bottom: 0; }
+.report-card ul li:first-child { padding-top: 0; }
+
+.report-card ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 18px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.report-card ul li:first-child::before { top: 8px; }
+
+.report-card ul li strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.report-card .role-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--blue-bg);
+  border: 1px solid var(--blue-border);
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--blue);
+  margin-bottom: 14px;
+  letter-spacing: 0.3px;
+}
+
+/* CTA bottom */
+.cta-bottom {
+  text-align: center;
+  padding: 28px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin-top: 16px;
+}
+
+.cta-bottom p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+
+.cta-bottom .btn-learn {
+  display: inline-block;
+  padding: 12px 28px;
+  font-size: 14px;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.cta-bottom .btn-learn:hover {
+  background: var(--accent-dark);
+}
+
+.cta-bottom .btn-restart {
+  display: block;
+  margin: 14px auto 0;
+  padding: 8px 20px;
+  font-size: 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.cta-bottom .btn-restart:hover {
+  border-color: var(--text-muted);
+  color: var(--text-secondary);
+}
+
+/* Language toggle now lives in the top .bar as .seg */
+
+/* Responsive */
+@media (max-width: 480px) {
+  .container { padding: 32px 16px 48px; }
+  .question-card { padding: 28px 20px; }
+  .header h1 { font-size: 22px; }
+  .result-hero { padding: 36px 20px 28px; }
+  .result-hero h2 { font-size: 26px; }
+  .report-card { padding: 20px 18px; }
+  .track-node .node-label { font-size: 9px; }
+}
+/* Ribbon celebration */
+.ribbon-overlay{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;}
+.ribbon{position:absolute;top:0;will-change:transform;animation:ribbon-fall var(--fall) cubic-bezier(.3,.45,.55,1) var(--delay) both;}
+.ribbon i{display:block;width:100%;height:100%;border-radius:2px;animation:ribbon-tumble var(--tumble) linear infinite;}
+@keyframes ribbon-fall{
+  0%{transform:translate3d(0,-72px,0) rotate(0deg);opacity:0;}
+  6%{opacity:1;}
+  85%{opacity:1;}
+  100%{transform:translate3d(var(--sway),112vh,0) rotate(var(--spin));opacity:0;}
+}
+@keyframes ribbon-tumble{
+  from{transform:rotate3d(1,.8,.3,0deg);}
+  to{transform:rotate3d(1,.8,.3,360deg);}
+}
+</style>
+</head>
+<body>
+<div class="bar">
+  <a class="wm" href="ai-level-quiz-hub.html"><span class="dot"></span><span id="wm"></span></a>
+  <div class="seg">
+    <button id="btn-en" class="active" onclick="switchLang('en')">EN</button>
+    <button id="btn-zh" onclick="switchLang('zh')">中</button>
+  </div>
+</div>
+<div class="container">
+  <!-- Header -->
+  <div class="header" id="quiz-header">
+    <div class="eyebrow" id="header-eyebrow"></div>
+    <h1 id="header-title"></h1>
+    <p id="header-subtitle"></p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap" id="progress-wrap">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="step-indicator" id="step-indicator">1 / 8</div>
+  </div>
+
+  <!-- Questions rendered dynamically -->
+  <div id="questions-container"></div>
+
+  <!-- Results -->
+  <div class="results-page" id="results-page">
+    <div class="result-hero" id="result-hero"></div>
+
+    <div class="report-card highlights" id="report-highlights">
+      <h3><svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.6l2.4 2.4 4.6-5.4"/></svg><span id="highlights-title"></span></h3>
+      <ul id="highlights-list"></ul>
+    </div>
+
+    <div class="report-card blockers" id="report-blockers">
+      <h3><svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 5.1L3.3 17.3c-.8 1.4.2 3.2 1.8 3.2h13.8c1.6 0 2.6-1.8 1.8-3.2L13.7 5.1c-.8-1.4-2.6-1.4-3.4 0z"/><path d="M12 9.5v4.5"/><path d="M12 17.2h.01"/></svg><span id="blockers-title"></span></h3>
+      <ul id="blockers-list"></ul>
+    </div>
+
+    <div class="report-card nextsteps" id="report-next">
+      <h3><svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><span id="nextsteps-title"></span></h3>
+      <ul id="next-list"></ul>
+    </div>
+
+    <div class="report-card role-advice" id="report-role">
+      <h3><svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="2.6"/><path d="M7.2 17.4c.9-2.5 2.7-3.9 4.8-3.9s3.9 1.4 4.8 3.9"/></svg><span id="role-title"></span></h3>
+      <div class="role-badge" id="role-badge"></div>
+      <ul id="role-list"></ul>
+    </div>
+
+    <div class="cta-bottom">
+      <p id="cta-text"></p>
+      <a href="mailto:juanlijackie2020@gmail.com" class="btn-learn" id="btn-learn"></a>
+      <button class="btn-restart" onclick="restart()" id="btn-restart"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentLang = 'en';
+const answers = {};
+let currentQ = 1;
+const totalQ = 8;
+let computedLevel = '';
+let computedScore = 0;
+
+const i18n = {
+  en: {
+    wm: 'AI Assessment',
+    eyebrow: 'Individual',
+    title: 'What Level Is Your AI Relationship?',
+    subtitle: '8 questions · 2 minutes · Instant AI collaboration capability report',
+    next: 'Next',
+    prev: 'Back',
+    submit: 'See My Results',
+    q1Label: 'Q1 · Basic Info',
+    q1Title: 'What best describes your work?',
+    q1Options: ['Business & Operations', 'Technical & Engineering', 'Marketing & Communications', 'Sales & Customer', 'Finance / Legal / HR / Admin', 'Management / Team Lead'],
+    q2Label: 'Q2 · AI Usage',
+    q2Title: 'How often and in what scenarios do you use AI at work?',
+    q2Options: [
+      'Occasionally — mainly for translation or research',
+      'Weekly — writing emails, editing docs, summarizing',
+      'Almost daily — handling multiple tasks like analysis, drafting, and planning',
+      'AI is embedded in my workflow — tasks trigger automatically',
+      'I\'ve built a personal AI system covering most repetitive work'
+    ],
+    q3Label: 'Q3 · Work Mode',
+    q3Title: 'When facing a new task at work, how do you typically start?',
+    q3Options: [
+      'Ask AI directly to see if it can help',
+      'Think about the desired format and structure first, then ask AI',
+      'Discuss the framework and standards with AI, then proceed step by step',
+      'Find the corresponding module in my existing AI workflow',
+      'I already have a ready-made Agent/template for this — just call it'
+    ],
+    q4Label: 'Q4 · Prompt Skills',
+    q4Title: 'When writing prompts for AI, what elements do you typically include?',
+    q4Options: [
+      'Simple description — one or two sentences',
+      'Specify role, format, output length and basic requirements',
+      'Provide background, standards, principles, and good examples',
+      'Design multi-step instruction chains with conditions and branches',
+      'I have a proven Prompt library — reuse and iterate by scenario'
+    ],
+    q5Label: 'Q5 · Context Management',
+    q5Title: 'How do you provide context when using AI?',
+    q5Options: [
+      'Barely provide any — just ask directly',
+      'Paste relevant files or emails for AI to review',
+      'Organize background info, stakeholders, and constraints before input',
+      'Build conversation memory so AI knows the full project picture',
+      'AI can automatically access key context from my work — no manual input needed'
+    ],
+    q6Label: 'Q6 · Agent Usage',
+    q6Title: 'What is your experience with AI Agents?',
+    q6Options: [
+      'Never heard of them / not sure what they are',
+      'Heard of them but never used one',
+      'Tried some Agent tools (GPTs, Coze) but no regular habit',
+      'Currently using Agents for specific workflows (auto-reports, data analysis)',
+      'Built multiple Agents working together, covering my core business scenarios'
+    ],
+    q7Label: 'Q7 · Quality Control',
+    q7Title: 'How do you handle AI-generated output?',
+    q7Options: [
+      'Use it directly — AI\'s answers are generally good enough',
+      'Make some formatting and wording edits before using',
+      'Treat AI output as a draft — I edit based on professional judgment',
+      'Clear division: AI executes, I make decisions and control quality',
+      'AI output is part of my quality management system with systematic evaluation standards'
+    ],
+    q8Label: 'Q8 · Scenario Test',
+    q8Title: 'You need to pitch a proposal to decision-makers — a new project, budget, or initiative. How would you use AI?',
+    q8Options: [
+      'Ask AI: "How do I structure a persuasive proposal?" and reference the answer',
+      'Give AI the specifics — audience, topic, goal — and ask for an outline in a confident, concise tone',
+      'Provide background data, past feedback, constraints — have AI design the storyline and anticipate tough questions',
+      'Have AI role-play the toughest decision-maker in a Q&A simulation; analyze weak points; finalize the approach',
+      'Call my "Pitch Agent" — it auto-reads past decks and project data, matches templates, generates a tailored draft + Q&A prep; I do final review'
+    ],
+    scoreBadge: 'Overall Score',
+    highlightsTitle: 'Your Strengths',
+    blockersTitle: 'What\'s Holding You Back',
+    nextStepsTitle: 'Next-Level Upgrade Path',
+    roleTitle: 'Advice for Your Role',
+    ctaText: 'Want a tailored next step for your level? An AIOD consultant can help you turn this result into a concrete plan.',
+    learnBtn: 'Contact AIOD consultant →',
+    restart: 'Retake Assessment'
+  },
+  zh: {
+    wm: 'AI 测评',
+    eyebrow: '个人',
+    title: '测测你跟AI的关系在哪一层',
+    subtitle: '8道题 · 2分钟 · 即时生成你的AI协作能力报告',
+    next: '下一题',
+    prev: '上一题',
+    submit: '查看我的结果',
+    q1Label: 'Q1 · 基本信息',
+    q1Title: '你的工作属于哪一类？',
+    q1Options: ['业务与运营', '技术与工程', '市场与传播', '销售与客户', '财务/法务/HR/行政', '管理层/带团队'],
+    q2Label: 'Q2 · AI使用场景',
+    q2Title: '你在工作中使用AI的频率和场景是？',
+    q2Options: [
+      '偶尔用一下，主要是翻译或查资料',
+      '每周都用，写邮件、改文档、做总结',
+      '几乎每天用，处理多种任务如分析、起草、方案设计',
+      'AI已嵌入我的日常工作流，多个任务自动触发',
+      '我已建立个人AI系统，覆盖大部分重复性工作'
+    ],
+    q3Label: 'Q3 · 工作模式',
+    q3Title: '遇到一个新的工作任务时，你通常怎么开始？',
+    q3Options: [
+      '直接去AI问一句，看看能不能帮上忙',
+      '先想好要什么格式和结构，再去问AI',
+      '先和AI讨论任务的框架和标准，再逐步推进',
+      '在我已有的AI工作流中找到对应模块来处理',
+      '这类任务我已有沉淀好的Agent/模板，直接调用'
+    ],
+    q4Label: 'Q4 · Prompt能力',
+    q4Title: '你给AI写指令（Prompt）时，通常包含哪些要素？',
+    q4Options: [
+      '简单描述需求，一两句话',
+      '会指定角色、格式、输出长度等基本要求',
+      '会提供背景、标准、原则，并给出好例子',
+      '会设计多步骤指令链，包含判断条件和分支',
+      '我有一套经过验证的Prompt库，按场景直接复用和迭代'
+    ],
+    q5Label: 'Q5 · 上下文管理',
+    q5Title: '你在使用AI时，如何提供上下文（Context）？',
+    q5Options: [
+      '基本不额外提供，直接问问题',
+      '会把相关文件或邮件贴给AI看',
+      '会整理背景信息、利益相关方、约束条件后再输入',
+      '会建立对话记忆，让AI了解项目全貌和历史决策',
+      'AI已能自动获取我工作中的关键上下文，无需手动提供'
+    ],
+    q6Label: 'Q6 · Agent使用',
+    q6Title: '你对AI Agent的使用情况是？',
+    q6Options: [
+      '没听说过 / 不太了解是什么',
+      '听说过但没实际用过',
+      '试用过一些Agent工具（如GPTs、Coze），但没形成习惯',
+      '正在使用Agent处理特定工作流（如自动化周报、数据分析）',
+      '已搭建多个Agent协同工作，覆盖我的核心业务场景'
+    ],
+    q7Label: 'Q7 · 质量把控',
+    q7Title: '你如何看待和处理AI产出的结果？',
+    q7Options: [
+      '直接用，觉得AI给的答案基本就能用',
+      '会做一些格式和措辞的修改后使用',
+      '把AI当作初稿，我基于专业判断进行修改和把关',
+      '我和AI有明确分工：AI执行，我决策和质量把控',
+      'AI的产出已纳入我的质量管理体系，有系统化的评估和迭代标准'
+    ],
+    q8Label: 'Q8 · 情景测试',
+    q8Title: '你需要向决策层汇报一个提案（新项目、预算或新举措），你会怎么用AI？',
+    q8Options: [
+      '问AI："怎么写一份有说服力的提案？"参考回答',
+      '告诉AI具体情况（听众、主题、目标），让它生成提纲，指定自信简洁的风格',
+      '给AI提供背景数据、以往反馈、限制条件，让AI设计叙事主线并预判尖锐问题',
+      '让AI扮演最挑剔的决策者做模拟问答；分析薄弱点，综合后定稿',
+      '调用已有的"提案Agent"，自动读取过往资料和项目数据、匹配模板、生成定制初稿+问答预案，我做最终审核'
+    ],
+    scoreBadge: '综合得分',
+    highlightsTitle: '你的亮点',
+    blockersTitle: '卡住你的东西',
+    nextStepsTitle: '下一步升级路线',
+    roleTitle: '针对你角色的建议',
+    ctaText: '想为你的层级定制下一步？AIOD 顾问可以帮你把这个结果变成可落地的计划。',
+    learnBtn: '联系 AIOD 顾问 →',
+    restart: '重新测试'
+  }
+};
+
+const levelData = {
+  en: {
+    L1: {
+      name: 'Instructional',
+      desc: 'You know AI can help, but each time it\'s one sentence, one question — like using a search engine. Results are random, unreproducible, and quality depends on luck.',
+      highlights: [
+        '<strong>Open Mindset</strong> — You\'ve taken the first step using AI, showing curiosity and willingness to try new technology. This is the most important starting point',
+        '<strong>Efficiency Instinct</strong> — You can identify which tasks can be accelerated with AI, showing an innate awareness of workflow optimization',
+        '<strong>Zero-Risk Experimentation</strong> — Using AI in low-risk scenarios (translation, research) avoids early compliance issues'
+      ],
+      blockers: [
+        '<strong>Low Input Quality → Unstable Output</strong> — One-sentence prompts give AI too much decision space. It can only "guess" what you want, leading to inconsistent results. You may be underestimating AI\'s true capabilities',
+        '<strong>No Reusable Methods</strong> — Starting from scratch each time, good results can\'t be reproduced. Even if last time worked great, a different phrasing yields completely different results',
+        '<strong>Unclear AI Boundaries</strong> — Not knowing what AI is good or bad at leads to wasted time in wrong scenarios or missed opportunities in right ones',
+        '<strong>No Feedback Loop</strong> — Use and leave, no record of what works or doesn\'t, making iterative improvement impossible'
+      ],
+      next: [
+        '<strong>Master Basic Prompt Structure</strong> — Learn the "Role + Task + Format + Constraints" framework. Example: "You are a senior business analyst (role), help me write a project status update (task), in a formal but concise tone, under 200 words (format + constraints)"',
+        '<strong>Pick 1-2 High-Frequency Scenarios</strong> — Don\'t just "ask AI whenever." Choose specific tasks (weekly report summaries, meeting minutes) and practice until it becomes muscle memory',
+        '<strong>Keep an "Effective/Ineffective" Log</strong> — After each AI use, spend 30 seconds noting: Was this prompt good? What needs changing in the output? How to ask better next time? You\'ll see clear progress in a week',
+        '<strong>Recommended Learning</strong> — Search LinkedIn Learning for "Prompt Engineering" and "AI for Business" to build foundational knowledge from the basics up'
+      ]
+    },
+    L2: {
+      name: 'Structured',
+      desc: 'You\'ve started giving AI context, roles, and format requirements — output quality has clearly improved. But you rebuild instructions from scratch each time, accumulating nothing.',
+      highlights: [
+        '<strong>Structured Thinking</strong> — You\'ve mastered prompt basics (role, format, constraints) and consciously control AI output direction. This separates "casual asking" from "effective use"',
+        '<strong>Quality Awareness</strong> — No longer satisfied with "whatever AI gives." You proactively set standards to evaluate output, showing professional quality standards',
+        '<strong>Scenario Recognition</strong> — You can judge which tasks suit AI and the most efficient approach. Your usage frequency and depth exceed most colleagues'
+      ],
+      blockers: [
+        '<strong>Rebuilding Every Time</strong> — You wrote a great email prompt last week but start from zero this week. No "save" habit means quality prompts become one-time consumables',
+        '<strong>Isolated Conversations</strong> — Each AI conversation is independent. Previous results can\'t transfer to the next. AI doesn\'t know your team context, company policies, or personal preferences',
+        '<strong>Optimizing "Phrasing" Not "Method"</strong> — Spending energy on wording without rethinking how the entire workflow could be redesigned with AI. Efficiency gains have a ceiling',
+        '<strong>Reuse by Memory, Not System</strong> — Good practices stay in your head. Change the scenario or colleague, and they can\'t be transferred'
+      ],
+      next: [
+        '<strong>Build a Personal Prompt Library</strong> — Categorize by scenario (writing/analysis/communication/reporting), save 2-3 verified templates each. Doesn\'t need to be perfect — reusable is valuable',
+        '<strong>Learn Context Management</strong> — Provide an "identity card" at the start of each conversation: your role, team situation, current project, key constraints. Let AI enter your work context from sentence one',
+        '<strong>Upgrade from Single-turn to Multi-turn</strong> — Complete full tasks in one conversation: discuss framework → fill content → refine wording → final review. Treat AI as a colleague with memory',
+        '<strong>Start Standardizing "Good"</strong> — Define what good output looks like (content completeness, tone match, format clarity). Build quantifiable evaluation dimensions',
+        '<strong>Recommended Learning</strong> — Search LinkedIn Learning for "Advanced Prompt Engineering" and "AI Workflow Automation" — focus on multi-turn dialogue and templating courses'
+      ]
+    },
+    L3: {
+      name: 'Collaborative',
+      desc: 'You treat AI as a professional partner, providing context and doing role-plays. Your professional judgment is starting to solidify into reusable frameworks, but methods and tools aren\'t formalized yet.',
+      highlights: [
+        '<strong>Co-creation Ability</strong> — You can discuss standards, principles, and frameworks with AI — not just "get answers" but "think together." Output has professional depth beyond templated content',
+        '<strong>Material Integration</strong> — You provide information AI doesn\'t have (internal data, historical cases, cultural context), combining AI\'s general capability with your professional judgment for truly usable output',
+        '<strong>Simulation Thinking</strong> — You use AI to role-play clients, stakeholders, and tough audiences for practice conversations. Using AI for "rehearsal" not just "production" is a hallmark of advanced users',
+        '<strong>Quality Gate Awareness</strong> — You\'re clear that AI is just a draft and final judgment is yours. Excellent human-AI collaboration boundaries'
+      ],
+      blockers: [
+        '<strong>Standards Without Formalization</strong> — You know how to get good results, but that knowledge lives in your "feel" — not in repeatable templates, processes, or Agents. Change the person or context, and you have to teach it all again',
+        '<strong>No Complete Loop</strong> — You use AI for preparation (e.g., a meeting brief), but don\'t have AI help you debrief afterward: what was useful? What wasn\'t covered? The diagnose → execute → feedback → iterate cycle isn\'t running',
+        '<strong>Agent Awareness Not Activated</strong> — Your capability is at the level where you could build Agents, but you\'re still in "conversation" mode repeating similar work. Like having a recipe but hand-cooking every time',
+        '<strong>Compliance is Reactive</strong> — Only considering compliance when asked, not having AI proactively flag risk levels. In sensitive business scenarios, this is a significant blind spot'
+      ],
+      next: [
+        '<strong>Package Conversations into Prompt Templates</strong> — Abstract your best AI collaboration scenarios into reusable templates: trigger scenario, input checklist, instruction structure, output format, quality standards',
+        '<strong>Build 2-3 Starter Agents</strong> — Choose your most repetitive work (weekly summaries, report drafting, knowledge-base Q&A) and build automated workflows with GPTs/Coze. Don\'t aim for perfect — run first, iterate later',
+        '<strong>Establish Feedback Loop Mechanism</strong> — After each AI task, add a "debrief" step: have AI compare expected vs. actual, flag improvement points, update next use template',
+        '<strong>Introduce Risk Level Prompting</strong> — For scenarios involving sensitive data, compliance, or legal issues, require AI to proactively flag risk levels (green/yellow/red) with corresponding recommendations',
+        '<strong>Recommended Learning</strong> — Search LinkedIn Learning for "Building AI Agents" and "AI Automation Tools" to get started with Agent construction fundamentals'
+      ]
+    },
+    L4: {
+      name: 'Systematic',
+      desc: 'You\'ve built your own intelligent system — AI is a fixed module in your workflow. Professional judgment has been codified into tools, multiplying efficiency sustainably.',
+      highlights: [
+        '<strong>AI as Work Method, Not Extra Tool</strong> — AI is deeply embedded in your daily workflow, not "opening another window" but a native component of every step. This is the qualitative shift from "using AI" to "AI-native work"',
+        '<strong>System Design Capability</strong> — You can design multi-step instruction chains and Agent coordination plans, breaking complex tasks into AI-executable modules. You think like a "process architect"',
+        '<strong>Clear Human-AI Division</strong> — You decide, AI executes; you control quality, AI produces drafts; you define standards, AI applies them. This division upgrades you from executor to "conductor"',
+        '<strong>Sustainability</strong> — Not relying on "being in the zone" for efficiency, but on systems ensuring stable output. Even on off days, your Agents maintain high-quality work'
+      ],
+      blockers: [
+        '<strong>System is Personal</strong> — Your Agents, templates, and workflows are tied to your personal accounts and habits. Team members can\'t directly reuse them, and the system stops if you leave. This limits your influence',
+        '<strong>Agent Coordination Gaps</strong> — Individual Agents work well, but data transfer, trigger conditions, and exception handling between Agents still need manual intervention. The "last mile" to full automation',
+        '<strong>Slow New Scenario Adaptation</strong> — Your system covers core scenarios, but building new Agents for new tasks isn\'t fast or polished enough. Missing a "rapid modeling" methodology',
+        '<strong>No Impact Measurement</strong> — You know "it\'s faster than before," but how much faster? How much quality improvement? Where does saved time go? Lacking data-driven evaluation and proof'
+      ],
+      next: [
+        '<strong>System Documentation</strong> — Document your Agent system, workflow design, and trigger rules into docs and SOPs. Goal: not just backup, but enabling a new hire to understand and start using your system within 2 hours',
+        '<strong>Digital Asset Mindset Shift</strong> — Start treating your system not as a "tool" but as an "asset." Evaluate which modules have universal value, can empower the team, and can quantify ROI',
+        '<strong>Build an Impact Dashboard</strong> — Track key metrics: weekly time saved, error rate changes, task volume. Data is the most powerful tool for reporting up and requesting resources',
+        '<strong>Establish Team Enablement Path</strong> — Pick 1-2 colleagues for pilot testing, share simplified versions of your Agents. Collect feedback on what designs are friendly for non-technical users',
+        '<strong>Recommended Learning</strong> — Search LinkedIn Learning for "AI Strategy for Leaders" and "Scaling AI in Organizations" to move from a personal system to team enablement'
+      ]
+    },
+    L5: {
+      name: 'Asset-Based',
+      desc: 'Your experience has crystallized into reusable digital assets — deliverable, quantifiable, and scalable, becoming a competitive moat for you and your organization.',
+      highlights: [
+        '<strong>Asset-Building Capability</strong> — Converting tacit knowledge (experience, judgment, processes) into explicit digital assets (Agents, template libraries, automation systems). This is the leap from "personally capable" to "creating organizational value"',
+        '<strong>Complete AI Work System</strong> — From standardized input → automated processing → quality-controlled output → feedback-driven iteration, you have a closed loop. Others use AI in fragments; you\'re systematic',
+        '<strong>Measurable Business Value</strong> — You can articulate "my system saves X hours monthly," "error rate reduced by X%," "covers X work scenarios." This isn\'t feeling — it\'s provable ROI',
+        '<strong>Organizational Influence</strong> — Your system doesn\'t just serve you; it\'s already or has potential to empower the entire team or cross-department, becoming an organizational AI transformation benchmark'
+      ],
+      blockers: [
+        '<strong>Maintenance Costs Persist</strong> — Digital assets aren\'t "build and forget" — they need continuous updates (policy changes, tool iterations, business adjustments). Without update mechanisms, assets depreciate',
+        '<strong>Scaling is a Different Challenge</strong> — You using it well ≠ others using it well. Different tech levels and work habits need different guidance. "Personal use" to "shared use" is another design round',
+        '<strong>Technology Depreciation Risk</strong> — AI capabilities leap every quarter. Agents designed for current model capabilities may have better alternatives in 6 months. Need "architectural flexibility" for change',
+        '<strong>Value Communication Bottleneck</strong> — What you do is advanced, but not all stakeholders understand it. Communicating value in non-technical language and securing resources and recognition is the next barrier to break'
+      ],
+      next: [
+        '<strong>Version Management & Update Mechanisms</strong> — Set quarterly review rhythms for your asset system: which modules need upgrades, which are outdated. Manage your AI assets like software products',
+        '<strong>Training and Authorization</strong> — Design "lightweight onboarding" and "deep progression" paths. Let beginners run basic scenarios in 2 minutes; let advanced users customize and extend. Amplify your leverage',
+        '<strong>Frontier Tracking & Architecture Upgrades</strong> — Stay current on new AI capabilities (multimodal, long context, Agent interconnection). Evaluate which enhance existing systems, which need architecture redesign',
+        '<strong>Build Your Influence Narrative</strong> — Compile your case collection: what problem each Agent solves, how much value it creates, how many people it covers. This is your "ammunition" for organizational voice and resources',
+        '<strong>Recommended Learning</strong> — Search LinkedIn Learning for "AI Transformation Leadership" and "Digital Asset Management" to drive organizational change from a leader\'s perspective'
+      ]
+    }
+  },
+  zh: {
+    L1: {
+      name: '指令型',
+      desc: '你知道AI能帮忙，但每次都是一句话、一个问题，像用搜索引擎。结果随机、不可复现，质量取决于运气。',
+      highlights: [
+        '<strong>开放心态</strong> — 已经迈出使用AI的第一步，对新技术有好奇心和尝试意愿，这是最重要的起点',
+        '<strong>效率直觉</strong> — 能识别出哪些任务可以交给AI加速，说明你对工作流的优化有本能意识',
+        '<strong>零风险试错</strong> — 在低风险场景（翻译、查资料）中使用AI，避免了初期可能的合规问题'
+      ],
+      blockers: [
+        '<strong>输入质量低 → 输出不稳定</strong> — 一句话指令给AI的决策空间太大，它只能"猜"你要什么，导致结果时好时坏。你可能因此低估了AI的真实能力',
+        '<strong>没有可复用方法</strong> — 每次都从零开始问，好的结果无法重现。即使上次效果很好，下次换个问法就完全不同',
+        '<strong>AI能力边界模糊</strong> — 不清楚AI擅长什么、不擅长什么，容易在错误的场景浪费时间，或在正确的场景错过机会',
+        '<strong>缺乏反馈循环</strong> — 用完即走，没有记录什么有效、什么无效，无法迭代改进'
+      ],
+      next: [
+        '<strong>掌握基础Prompt结构</strong> — 学习"角色+任务+格式+约束"四要素框架。例如："你是一位资深业务分析师（角色），请帮我写一份项目进展汇报（任务），用正式但简洁的语气，控制在200字以内（格式+约束）"',
+        '<strong>选择1-2个高频场景固定使用</strong> — 不要泛泛地"有事就问AI"，而是选定具体任务（如每周周报总结、会议纪要整理），反复练习直到形成肌肉记忆',
+        '<strong>建立"有效/无效"记录</strong> — 每次用AI后花30秒记录：这次问法好不好？输出哪里需要改？下次怎么问更好？一周后你会看到明显进步',
+        '<strong>推荐学习</strong> — LinkedIn Learning 上搜索 "Prompt Engineering" 和 "AI for Business"，从基础课程开始建立系统认知'
+      ]
+    },
+    L2: {
+      name: '结构型',
+      desc: '你已经开始给AI提供背景、角色、格式要求，输出质量明显提升。但每次都要重新搭建指令，积累为零。',
+      highlights: [
+        '<strong>结构化思维</strong> — 已掌握Prompt的基本要素（角色、格式、约束），能有意识地控制AI的输出方向，这是区分"随便问问"和"有效使用"的分水岭',
+        '<strong>质量意识</strong> — 不再满足于"AI给什么用什么"，会主动设定标准来评估输出，说明你对专业品质有要求',
+        '<strong>场景识别能力</strong> — 能判断哪些任务适合用AI、用什么方式问最高效，使用频率和深度都超过大多数同事'
+      ],
+      blockers: [
+        '<strong>每次重新搭建</strong> — 明明上周写了一个很好的邮件Prompt，这周又从零开始。没有"存档"习惯，优质指令变成一次性消耗品',
+        '<strong>对话是孤立的</strong> — 每次和AI的对话都是独立的，前一次的成果无法传递到下一次。AI不知道你的团队背景、公司政策、个人偏好',
+        '<strong>只优化"问法"，没优化"方法"</strong> — 把精力花在措辞上，但没有思考整个任务流程如何用AI重新设计。效率提升有天花板',
+        '<strong>复用靠记忆而非系统</strong> — 好的做法记在脑子里，换个场景或换个同事就无法迁移'
+      ],
+      next: [
+        '<strong>建立个人Prompt库</strong> — 按场景分类（写作/分析/沟通/汇报），每个场景保存2-3个验证过的模板。不需要完美，能复用就有价值',
+        '<strong>学习上下文管理</strong> — 在每次对话开头提供"身份卡片"：你的角色、团队情况、当前项目、关键约束。让AI从第一句话就进入你的工作语境',
+        '<strong>从单轮问答升级到多轮协作</strong> — 尝试在一次对话中完成完整任务：先讨论框架→再填充内容→然后优化措辞→最后审核。把AI当作有记忆的同事',
+        '<strong>开始标准化你的"好"</strong> — 定义什么是好的输出（内容完整度、语气匹配度、格式清晰度），建立可量化的评估维度',
+        '<strong>推荐学习</strong> — LinkedIn Learning 搜索 "Advanced Prompt Engineering" 和 "AI Workflow Automation"，关注多轮对话和模板化的课程'
+      ]
+    },
+    L3: {
+      name: '协作型',
+      desc: '你把AI当专业搭档，能提供背景信息并做角色扮演。专业判断已开始固化成可复用框架，但方法和复用工具尚未成型。',
+      highlights: [
+        '<strong>共创能力</strong> — 能和AI一起讨论标准、原则、框架，不只是"要答案"，而是"一起想"。输出有专业深度，超越了模板化内容',
+        '<strong>素材整合力</strong> — 懂得提供AI没有的信息（内部数据、历史案例、文化语境），让AI的通用能力和你的专业判断结合，产出真正可用的东西',
+        '<strong>模拟与训练思维</strong> — 已会让AI扮演客户、合作方、挑剔的听众做模拟对话，用AI做"排练"而非只做"生产"。这是高阶使用者的标志',
+        '<strong>质量把关意识</strong> — 清楚AI只是初稿，最终判断在你手里。人机协作的边界感很好'
+      ],
+      blockers: [
+        '<strong>有标准但没固化</strong> — 你知道怎么做能出好结果，但这些知识存在你的"手感"里，没有变成可重复执行的模板、流程或Agent。换个人或换个情境，你得重新教一遍',
+        '<strong>缺少完整闭环</strong> — 用AI做了准备（如会议简报），但事后没有让AI帮你复盘：哪些准备有用？哪些场景没覆盖到？诊断→执行→反馈→迭代的循环没跑通',
+        '<strong>Agent意识未觉醒</strong> — 你的能力已经到了可以构建Agent的水平，但还在用"对话"模式一次次重复相似的工作。相当于有了配方却每次手工下厨',
+        '<strong>合规/风险是被动的</strong> — 只在被问到时才考虑合规问题，没有让AI主动标注风险等级。在敏感的业务场景中这是一个显著盲区'
+      ],
+      next: [
+        '<strong>将对话模式封装为Prompt模板</strong> — 把你和AI合作最顺的那几个场景，抽象成可复用的模板。包括：触发场景、输入清单、指令结构、输出格式、质量标准',
+        '<strong>构建2-3个入门Agent</strong> — 选择你最重复的工作（如周报汇总、报告起草、知识库答疑），用GPTs/Coze等工具搭建自动化工作流。不求完美，先跑通再迭代',
+        '<strong>建立反馈闭环机制</strong> — 每次用AI完成任务后，增加一个"复盘"步骤：让AI对比预期vs实际，标注可改进点，更新到下次使用的模板中',
+        '<strong>引入风险分级提示</strong> — 在涉及敏感数据、合规、法律的场景中，要求AI在输出时主动标注风险等级（绿/黄/红），并给出对应建议',
+        '<strong>推荐学习</strong> — LinkedIn Learning 搜索 "Building AI Agents" 和 "AI Automation Tools"，开始了解Agent构建的基础框架'
+      ]
+    },
+    L4: {
+      name: '系统型',
+      desc: '你已搭建属于自己的智能体系统，AI是工作流的固定模块。专业判断固化成了工具，效率倍增且可持续。',
+      highlights: [
+        '<strong>AI是工作方式，不是额外工具</strong> — AI已深度嵌入你的日常工作流，不是"额外打开一个窗口"，而是每个环节的原生组成部分。这是从"用AI"到"AI化工作"的质变',
+        '<strong>系统设计能力</strong> — 能设计多步骤指令链和Agent协同方案，把复杂任务拆解为AI可执行的模块。说明你具备"流程架构师"的思维',
+        '<strong>清晰的人机分工</strong> — 你决策，AI执行；你把关质量，AI产出初稿；你定义标准，AI应用标准。这种分工让你从执行者升级为"指挥者"',
+        '<strong>可持续性</strong> — 不是靠"状态好"才能高效，而是靠系统保障稳定输出。即使状态不佳，你的Agent依然在帮你高质量完成工作'
+      ],
+      blockers: [
+        '<strong>系统是个人的</strong> — 你的Agent、模板、工作流都绑定在你个人的账号和习惯上。团队成员无法直接复用，你离开后系统就停摆了。这限制了影响力的扩大',
+        '<strong>Agent协同有缝隙</strong> — 单个Agent运作良好，但Agent之间的数据传递、触发条件、异常处理还需要人工干预。距离"全自动"还有最后一公里',
+        '<strong>新场景适配慢</strong> — 现有系统覆盖了你的核心场景，但遇到新任务时，搭建新Agent的速度和质量还不够快。缺少"快速建模"的方法论',
+        '<strong>缺少效果度量</strong> — 知道"比以前快了"，但具体快了多少？质量提升了多少？省下的时间用在了哪里？缺乏数据化的评估和证明'
+      ],
+      next: [
+        '<strong>系统文档化</strong> — 将你的Agent体系、工作流设计、触发规则整理成文档和SOP。目标不只是备份，而是让新人2小时内能理解并开始使用你的系统',
+        '<strong>数字资产思维转型</strong> — 开始把你的系统不是当作"工具"，而是当作"资产"来经营。评估哪些模块有通用价值、可以赋能团队、可以量化ROI',
+        '<strong>构建效果仪表盘</strong> — 追踪关键指标：每周节省时间、错误率变化、处理任务数量。数据是向上汇报和申请资源的最有力工具',
+        '<strong>建立团队赋能路径</strong> — 选1-2位同事做试点，将你的Agent以简化版分享给他们使用。收集反馈，验证哪些设计对非技术用户也友好',
+        '<strong>推荐学习</strong> — LinkedIn Learning 搜索 "AI Strategy for Leaders" 和 "Scaling AI in Organizations"，从个人系统迈向团队赋能'
+      ]
+    },
+    L5: {
+      name: '资产型',
+      desc: '你的经验已沉淀为可复用的数字资产——可交付、可量化、可拓展，成为个人和组织的竞争壁垒。',
+      highlights: [
+        '<strong>资产化能力</strong> — 将隐性知识（经验、判断、流程）转化为显性的数字资产（Agent、模板库、自动化系统），是从"个人能力强"到"创造组织价值"的跃迁',
+        '<strong>完整的AI工作体系</strong> — 从输入标准化→处理自动化→输出质量控制→反馈迭代优化，形成了闭环。别人用AI是点状的，你是系统性的',
+        '<strong>可衡量的商业价值</strong> — 能说清"我的系统每月节省X小时"、"错误率降低X%"、"覆盖X个工作场景"。这不是感觉，是可证明的ROI',
+        '<strong>组织影响力</strong> — 你的系统不只服务自己，已开始或有潜力赋能整个团队甚至跨部门，成为组织AI转型的标杆'
+      ],
+      blockers: [
+        '<strong>维护成本持续存在</strong> — 数字资产不是"建好就完"，需要持续更新（政策变化、工具迭代、业务调整）。如果没有建立更新机制，资产会逐渐折旧',
+        '<strong>规模化推广是不同的挑战</strong> — 你能用好≠别人能用好。不同技术水平、不同工作习惯的同事需要不同的引导方式。从"自用"到"共用"是另一轮设计',
+        '<strong>技术折旧风险</strong> — AI能力每季度都在跃升，基于当前模型能力设计的Agent可能6个月后就有更优方案。需要"架构弹性"来应对变化',
+        '<strong>价值传达瓶颈</strong> — 你做的事情很先进，但不一定所有stakeholder都理解。如何用非技术语言讲清价值、争取资源和认可，是下一个需要突破的关卡'
+      ],
+      next: [
+        '<strong>建立版本管理和更新机制</strong> — 为你的资产体系设定季度review节奏，评估哪些模块需要升级、哪些已过时可以淘汰。像软件产品一样管理你的AI资产',
+        '<strong>培训和授权</strong> — 设计"轻量级入门"和"深度进阶"两条路径。让新手2分钟内能跑通基础场景，让高阶用户能自定义和扩展。放大你的杠杆效应',
+        '<strong>前沿追踪与架构升级</strong> — 保持对AI新能力（多模态、长上下文、Agent互联）的关注，评估哪些能增强现有系统、哪些需要架构重设计',
+        '<strong>构建影响力叙事</strong> — 整理你的案例集：每个Agent解决了什么问题、带来多少价值、覆盖多少人。这是你向组织要话语权和资源的"弹药"',
+        '<strong>推荐学习</strong> — LinkedIn Learning 搜索 "AI Transformation Leadership" 和 "Digital Asset Management"，以leader视角驱动组织变革'
+      ]
+    }
+  }
+};
+
+const roleAdvice = {
+  en: {
+    business: {
+      label: 'Business & Operations',
+      advice: [
+        '<strong>Use AI to Compress Analysis Time</strong> — Your core value is "turning scattered information into decisions." Let AI digest reports, meeting notes, and data dumps into insight summaries, freeing you from "data transportation" to focus on the decision itself',
+        '<strong>Key Scenarios</strong> — Project status summaries, meeting minutes → action items, process documentation, vendor and option comparison tables, first-draft business cases',
+        '<strong>Growth Direction</strong> — Build a standard "question → AI-assisted analysis → my judgment" flow. Goal: when a stakeholder asks, you deliver a structured analysis within 24 hours instead of spending 3 days building a deck',
+        '<strong>Risk Reminder</strong> — You handle commercially sensitive information (pricing, strategy, unreleased plans). Always anonymize or abstract data before using public AI tools'
+      ]
+    },
+    tech: {
+      label: 'Technical & Engineering',
+      advice: [
+        '<strong>Use AI as Your Pair Partner</strong> — Code review, test generation, documentation, debugging hypotheses: let AI accelerate every step from requirement to delivery while you keep architectural control',
+        '<strong>Key Scenarios</strong> — Explaining and reviewing code, generating test cases, drafting runbooks and technical docs, translating business requirements into specs, log and error analysis',
+        '<strong>Growth Direction</strong> — Package repetitive engineering workflows (report generation, environment checks, log triage) into Agents. You are the closest role to full Agent-building capability',
+        '<strong>Unique Advantage</strong> — You naturally become the team\'s "AI capability builder." The methods you master can be turned into tools and enablement paths for everyone else'
+      ]
+    },
+    marketing: {
+      label: 'Marketing & Communications',
+      advice: [
+        '<strong>Use AI for Volume and Variants</strong> — One idea, ten channel versions. Let AI handle drafts, tone adaptation, localization, and repurposing while you own the creative direction and brand judgment',
+        '<strong>Key Scenarios</strong> — Content repurposing across channels, campaign brainstorming, audience research synthesis, editorial calendar drafting, pitch and press material iterations',
+        '<strong>Growth Direction</strong> — Build a brand-voice prompt library: your tone, vocabulary, and approval standards packaged once, reused everywhere. Output becomes on-brand without re-explaining',
+        '<strong>Risk Reminder</strong> — Unreleased campaigns and brand strategy are sensitive. Verify every fact and claim — AI hallucinates confidently, and your audience notices'
+      ]
+    },
+    sales: {
+      label: 'Sales & Customer',
+      advice: [
+        '<strong>Use AI for Preparation and Follow-up</strong> — Deals are won before and after the meeting. Let AI compress research, meeting prep, and follow-up so you spend your energy on the conversation itself',
+        '<strong>Key Scenarios</strong> — Prospect and account research summaries, proposal and quote drafting, objection-handling playbooks, post-meeting recaps and next-step emails',
+        '<strong>Growth Direction</strong> — Build a "prep → meeting → follow-up" AI loop: research brief before, live support during, recap and action tracking after. Every meeting compounds',
+        '<strong>Risk Reminder</strong> — Customer data, pricing, and contract terms are sensitive. Anonymize before using public tools, and never input customer personal data — one leak can cost the account'
+      ]
+    },
+    specialist: {
+      label: 'Finance / Legal / HR / Admin',
+      advice: [
+        '<strong>Use AI for Structured Depth</strong> — Your core value is "professional standards + accuracy." Let AI assist with benchmarking, first-draft documents, and comparison logic while you own the final judgment',
+        '<strong>Key Scenarios</strong> — Document review and summarization, multi-language version management, regulation and policy comparison tables, research synthesis, FAQ and knowledge-base drafting',
+        '<strong>Growth Direction</strong> — Build a domain knowledge base: consolidate policies, cases, and precedents scattered across files into one AI-searchable system. Turn "finding the reference" from 30 minutes to 30 seconds',
+        '<strong>Risk Reminder</strong> — You operate under the highest data sensitivity (personal data, contracts, confidential matters). Use approved enterprise AI tools only, with strict input hygiene — this is non-negotiable'
+      ]
+    },
+    management: {
+      label: 'Management',
+      advice: [
+        '<strong>Use AI as a Strategic Multiplier</strong> — Your core value is "setting direction, enabling teams, and driving results." AI helps you make faster, more informed decisions by synthesizing team data, identifying patterns, and generating strategic options you can evaluate',
+        '<strong>Key Scenarios</strong> — Decision briefs and option papers, stakeholder communication, planning and scenario modeling, meeting agendas and pre-reads, team performance pattern analysis',
+        '<strong>Growth Direction</strong> — Become the AI transformation champion for your team. Set the vision for how AI integrates into your team\'s workflow, allocate time for experimentation, and measure adoption progress. Your sponsorship is the #1 factor in whether your team actually uses AI',
+        '<strong>Strategic Priority</strong> — Focus less on personal AI mastery and more on creating the conditions for your team to thrive with AI: psychological safety to experiment, clear data governance guidelines, and recognition for AI-driven improvements'
+      ]
+    }
+  },
+  zh: {
+    business: {
+      label: '业务与运营',
+      advice: [
+        '<strong>用AI压缩分析时间</strong> — 你的核心价值是"把分散的信息变成决策"。让AI帮你消化报告、会议记录和数据，生成洞察摘要，把你从"数据搬运"中解放出来，专注于决策本身',
+        '<strong>重点场景</strong> — 项目状态总结、会议纪要转行动项、流程文档、供应商与方案对比表、商业方案初稿',
+        '<strong>升级方向</strong> — 建立"问题→AI辅助分析→我的判断"的标准流程。目标是：任何人来找你要分析，你能在24小时内输出结构化结论，而不是花三天做PPT',
+        '<strong>风险提醒</strong> — 你接触大量商业敏感信息（定价、战略、未发布计划）。使用公共AI工具前务必对数据脱敏或抽象化'
+      ]
+    },
+    tech: {
+      label: '技术与工程',
+      advice: [
+        '<strong>用AI做结对伙伴</strong> — 代码审查、测试生成、文档撰写、调试假设推演：让AI加速从需求到交付的每个环节，而你来掌控架构和标准',
+        '<strong>重点场景</strong> — 代码解读与审查、测试用例生成、运维手册与技术文档起草、业务需求转规格说明、日志与报错分析',
+        '<strong>升级方向</strong> — 把重复的工程工作流（报告生成、环境检查、日志分诊）封装为Agent。你是离完整Agent构建能力最近的角色',
+        '<strong>独特优势</strong> — 你天然是团队的"AI能力建设者"。你掌握的方法可以变成工具和赋能路径，帮其他角色一起提升'
+      ]
+    },
+    marketing: {
+      label: '市场与传播',
+      advice: [
+        '<strong>用AI做量与变体</strong> — 一个创意，十个渠道版本。让AI处理初稿、语气适配、本地化和内容改编，你来掌舵创意方向和品牌判断',
+        '<strong>重点场景</strong> — 跨渠道内容改编、营销活动脑暴、受众调研整合、内容日历起草、提案与传播物料迭代',
+        '<strong>升级方向</strong> — 建立品牌语气Prompt库：把你的用词、风格、审核标准一次性打包复用。输出天然贴合品牌，无需每次重新解释',
+        '<strong>风险提醒</strong> — 未发布的活动和品牌策略属于敏感信息。核实每一个事实和数字——AI会一本正经地编造，而你的受众看得出来'
+      ]
+    },
+    sales: {
+      label: '销售与客户',
+      advice: [
+        '<strong>用AI做准备与跟进</strong> — 成交发生在会议前后。让AI压缩调研、会前准备和会后跟进的时间，把精力留给对话本身',
+        '<strong>重点场景</strong> — 潜在客户与客户调研摘要、提案与报价起草、异议应对手册、会后复盘与下一步邮件',
+        '<strong>升级方向</strong> — 建立"准备→会议→跟进"的AI闭环：会前调研简报、会中实时支持、会后复盘与行动追踪。每一次会议都在累积资产',
+        '<strong>风险提醒</strong> — 客户数据、价格、合同条款都属敏感信息。使用公共工具前先脱敏，绝不输入客户个人信息——一次泄露就可能丢掉整个客户'
+      ]
+    },
+    specialist: {
+      label: '财务/法务/HR/行政',
+      advice: [
+        '<strong>用AI做结构化深挖</strong> — 你的核心价值是"专业标准+准确性"。让AI辅助对标分析、文书初稿、对比逻辑梳理，最终判断始终在你手里',
+        '<strong>重点场景</strong> — 文书审阅与摘要、多语言版本管理、法规与政策对比表、调研整合、FAQ与知识库建设',
+        '<strong>升级方向</strong> — 建立专业领域知识库：把散落在各处的政策、案例、先例整合成一个AI可检索的系统。让"查找依据"从30分钟变成30秒',
+        '<strong>风险提醒</strong> — 你的数据敏感度最高（个人信息、合同、保密事项）。只使用企业批准的AI工具，严格输入纪律——这一点没有商量余地'
+      ]
+    },
+    management: {
+      label: '管理者',
+      advice: [
+        '<strong>用AI作为战略杠杆</strong> — 你的核心价值是"定方向、赋能团队、驱动结果"。AI帮你更快做出更有依据的决策：综合团队数据、识别模式、生成供你评估的策略选项',
+        '<strong>重点场景</strong> — 决策简报与方案对比、利益相关方沟通、规划与情景建模、会议议程与会前材料、团队绩效模式分析',
+        '<strong>升级方向</strong> — 成为团队的AI转型推动者。设定AI融入团队工作流的愿景，为实验分配时间，衡量采用进度。你的支持是团队是否真正使用AI的第一决定因素',
+        '<strong>战略重点</strong> — 与其追求个人AI精通，不如为团队创造AI繁荣的条件：实验的心理安全感、清晰的数据治理准则、对AI驱动改进的认可'
+      ]
+    }
+  }
+};
+
+const q1Values = ['business', 'tech', 'marketing', 'sales', 'specialist', 'management'];
+const labels = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+function t(key) { return i18n[currentLang][key]; }
+
+function buildQuestions() {
+  var container = document.getElementById('questions-container');
+  container.innerHTML = '';
+  var qConfigs = [
+    { num: 1, labelKey: 'q1Label', titleKey: 'q1Title', optKey: 'q1Options', values: q1Values, isFirst: true },
+    { num: 2, labelKey: 'q2Label', titleKey: 'q2Title', optKey: 'q2Options', values: ['1','2','3','4','5'] },
+    { num: 3, labelKey: 'q3Label', titleKey: 'q3Title', optKey: 'q3Options', values: ['1','2','3','4','5'] },
+    { num: 4, labelKey: 'q4Label', titleKey: 'q4Title', optKey: 'q4Options', values: ['1','2','3','4','5'] },
+    { num: 5, labelKey: 'q5Label', titleKey: 'q5Title', optKey: 'q5Options', values: ['1','2','3','4','5'] },
+    { num: 6, labelKey: 'q6Label', titleKey: 'q6Title', optKey: 'q6Options', values: ['1','2','3','4','5'] },
+    { num: 7, labelKey: 'q7Label', titleKey: 'q7Title', optKey: 'q7Options', values: ['1','2','3','4','5'] },
+    { num: 8, labelKey: 'q8Label', titleKey: 'q8Title', optKey: 'q8Options', values: ['1','2','3','4','5'], isLast: true }
+  ];
+
+  qConfigs.forEach(function(q) {
+    var active = q.num === currentQ ? ' active' : '';
+    var opts = t(q.optKey);
+    var optsHTML = opts.map(function(text, idx) {
+      var sel = answers[q.num] === q.values[idx] ? ' selected' : '';
+      return '<div class="option' + sel + '" data-value="' + q.values[idx] + '" data-label="' + labels[idx] + '">' + text + '</div>';
+    }).join('');
+
+    var navHTML = '<div class="nav-buttons">';
+    if (q.isFirst) {
+      navHTML += '<div></div>';
+      navHTML += '<button class="btn btn-primary" onclick="nextQuestion()"' + (!answers[q.num] ? ' disabled' : '') + '>' + t('next') + '</button>';
+    } else if (q.isLast) {
+      navHTML += '<button class="btn btn-secondary" onclick="prevQuestion()">' + t('prev') + '</button>';
+      navHTML += '<button class="btn btn-submit" onclick="submitQuiz()"' + (!answers[q.num] ? ' disabled' : '') + '>' + t('submit') + '</button>';
+    } else {
+      navHTML += '<button class="btn btn-secondary" onclick="prevQuestion()">' + t('prev') + '</button>';
+      navHTML += '<button class="btn btn-primary" onclick="nextQuestion()"' + (!answers[q.num] ? ' disabled' : '') + '>' + t('next') + '</button>';
+    }
+    navHTML += '</div>';
+
+    var cardHTML = '<div class="question-card' + active + '" data-question="' + q.num + '">' +
+      '<span class="q-label">' + t(q.labelKey) + '</span>' +
+      '<h2>' + t(q.titleKey) + '</h2>' +
+      '<div class="options">' + optsHTML + '</div>' +
+      navHTML + '</div>';
+    container.insertAdjacentHTML('beforeend', cardHTML);
+  });
+
+  container.querySelectorAll('.option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      var card = this.closest('.question-card');
+      card.querySelectorAll('.option').forEach(function(o) { o.classList.remove('selected'); });
+      this.classList.add('selected');
+      var qNum = parseInt(card.dataset.question);
+      answers[qNum] = this.dataset.value;
+      var btn = card.querySelector('.btn-primary, .btn-submit');
+      if (btn) btn.disabled = false;
+    });
+  });
+}
+
+function applyLang() {
+  document.getElementById('wm').textContent = t('wm');
+  document.getElementById('header-eyebrow').textContent = t('eyebrow');
+  document.getElementById('header-title').textContent = t('title');
+  document.getElementById('header-subtitle').textContent = t('subtitle');
+  document.getElementById('highlights-title').textContent = t('highlightsTitle');
+  document.getElementById('blockers-title').textContent = t('blockersTitle');
+  document.getElementById('nextsteps-title').textContent = t('nextStepsTitle');
+  document.getElementById('role-title').textContent = t('roleTitle');
+  document.getElementById('cta-text').textContent = t('ctaText');
+  document.getElementById('btn-learn').textContent = t('learnBtn');
+  document.getElementById('btn-restart').textContent = t('restart');
+  document.documentElement.lang = currentLang === 'en' ? 'en' : 'zh-CN';
+  document.title = currentLang === 'en' ? 'AI Assessment · Individual' : 'AI 测评 · 个人';
+  buildQuestions();
+}
+
+function switchLang(lang) {
+  currentLang = lang;
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+  applyLang();
+  if (document.getElementById('results-page').classList.contains('active')) {
+    showResults();
+  }
+}
+
+function updateProgress() {
+  var pct = (currentQ / totalQ) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('step-indicator').textContent = currentQ + ' / ' + totalQ;
+}
+
+function showQuestion(num) {
+  document.querySelectorAll('.question-card').forEach(function(c) { c.classList.remove('active'); });
+  var target = document.querySelector('[data-question="' + num + '"]');
+  if (target) target.classList.add('active');
+  currentQ = num;
+  updateProgress();
+}
+
+function nextQuestion() {
+  if (currentQ < totalQ) showQuestion(currentQ + 1);
+}
+
+function prevQuestion() {
+  if (currentQ > 1) showQuestion(currentQ - 1);
+}
+
+function calculateLevel() {
+  var scoreQ2to7 = 0;
+  for (var i = 2; i <= 7; i++) {
+    scoreQ2to7 += parseInt(answers[i] || 0);
+  }
+  var scoreQ8 = parseInt(answers[8] || 0);
+  var finalScore = (scoreQ2to7 / 30) * 80 + (scoreQ8 / 5) * 20;
+
+  var level;
+  if (finalScore <= 25) level = 'L1';
+  else if (finalScore <= 45) level = 'L2';
+  else if (finalScore <= 65) level = 'L3';
+  else if (finalScore <= 82) level = 'L4';
+  else level = 'L5';
+
+  return { level: level, score: Math.round(finalScore) };
+}
+
+function submitQuiz() {
+  if (!answers[8]) return;
+
+  var result = calculateLevel();
+  computedLevel = result.level;
+  computedScore = result.score;
+
+  document.querySelectorAll('.question-card').forEach(function(c) { c.classList.remove('active'); });
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('header-title').style.display = 'none';
+  document.getElementById('header-subtitle').style.display = 'none';
+  showResults();
+  launchRibbons();
+}
+
+function showResults() {
+  var data = levelData[currentLang][computedLevel];
+  var role = answers[1] || 'business';
+  var roleData = roleAdvice[currentLang][role];
+
+  var levelNum = parseInt(computedLevel.replace('L', ''));
+  var names = [levelData[currentLang].L1.name, levelData[currentLang].L2.name, levelData[currentLang].L3.name, levelData[currentLang].L4.name, levelData[currentLang].L5.name];
+  var trackHTML = '';
+  for (var i = 1; i <= 5; i++) {
+    var cls = i < levelNum ? 'reached' : (i === levelNum ? 'current' : '');
+    var labelCls = i === levelNum ? 'current-label' : '';
+    trackHTML += '<div class="track-node"><div class="node ' + cls + '">L' + i + '</div><span class="node-label ' + labelCls + '">' + names[i-1] + '</span></div>';
+  }
+
+  document.getElementById('result-hero').innerHTML =
+    '<div class="score-badge">' + t('scoreBadge') + ' ' + computedScore + ' / 100</div>' +
+    '<h2>' + computedLevel + ' | <span class="level-name">' + data.name + '</span></h2>' +
+    '<div class="level-track">' + trackHTML + '</div>' +
+    '<p class="desc">' + data.desc + '</p>';
+
+  document.getElementById('highlights-list').innerHTML = data.highlights.map(function(h) { return '<li>' + h + '</li>'; }).join('');
+  document.getElementById('blockers-list').innerHTML = data.blockers.map(function(b) { return '<li>' + b + '</li>'; }).join('');
+  document.getElementById('next-list').innerHTML = data.next.map(function(n) { return '<li>' + n + '</li>'; }).join('');
+
+  document.getElementById('role-badge').textContent = roleData.label;
+  document.getElementById('role-list').innerHTML = roleData.advice.map(function(a) { return '<li>' + a + '</li>'; }).join('');
+
+  document.getElementById('results-page').classList.add('active');
+  animateScore();
+}
+
+function restart() {
+  Object.keys(answers).forEach(function(k) { delete answers[k]; });
+  currentQ = 1;
+  document.getElementById('results-page').classList.remove('active');
+  document.getElementById('progress-wrap').style.display = '';
+  document.getElementById('header-title').style.display = '';
+  document.getElementById('header-subtitle').style.display = '';
+  applyLang();
+  updateProgress();
+}
+
+function animateScore() {
+  var badge = document.querySelector('#result-hero .score-badge');
+  if (!badge) return;
+  var label = t('scoreBadge') + ' ';
+  badge.textContent = label + '0 / 100';
+  var start = null, dur = 900;
+  function step(ts) {
+    if (!start) start = ts;
+    var p = Math.min((ts - start) / dur, 1);
+    var eased = 1 - Math.pow(1 - p, 3);
+    badge.textContent = label + Math.round(computedScore * eased) + ' / 100';
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+applyLang();
+updateProgress();
+function launchRibbons() {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var old = document.querySelector('.ribbon-overlay');
+  if (old) old.remove();
+  var colors = ['#0071e3', '#2997ff', '#34c759', '#ffcc00', '#ff9f0a', '#ff375f', '#af52de'];
+  var overlay = document.createElement('div');
+  overlay.className = 'ribbon-overlay';
+  for (var i = 0; i < 34; i++) {
+    var r = document.createElement('div');
+    r.className = 'ribbon';
+    r.style.left = (Math.random() * 100) + '%';
+    var isStream = Math.random() < 0.22;
+    r.style.width = (isStream ? 5 + Math.random() * 2 : 6 + Math.random() * 4) + 'px';
+    r.style.height = (isStream ? 52 + Math.random() * 34 : 16 + Math.random() * 22) + 'px';
+    r.style.setProperty('--fall', (2.3 + Math.random() * 1.3) + 's');
+    r.style.setProperty('--delay', (Math.random() * 0.9) + 's');
+    r.style.setProperty('--sway', (Math.random() * 180 - 90) + 'px');
+    r.style.setProperty('--spin', (Math.random() < 0.5 ? '-' : '') + (300 + Math.floor(Math.random() * 500)) + 'deg');
+    r.style.setProperty('--tumble', (0.6 + Math.random() * 0.7) + 's');
+    var s = document.createElement('i');
+    s.style.background = colors[i % colors.length];
+    r.appendChild(s);
+    overlay.appendChild(r);
+  }
+  document.body.appendChild(overlay);
+  setTimeout(function() { overlay.remove(); }, 4800);
+}
+</script>
+</body>
+</html>
